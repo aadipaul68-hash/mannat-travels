@@ -19,6 +19,7 @@ import { AdiyogiPopupModal } from './components/AdiyogiPopupModal';
 import { AdiyogiContactSection } from './components/AdiyogiContactSection';
 import { TourDetailModal } from './components/TourDetailModal';
 import { AdminPanelModal } from './components/AdminPanelModal';
+import { CustomerReviewsSection } from './components/CustomerReviewsSection';
 import {
   SITE_INFO,
   POPULAR_TOURS_DEFAULT,
@@ -147,6 +148,9 @@ export default function App() {
             <a href="#destinations" className="hover:text-[#f1683a] transition-colors py-1">
               Destinations
             </a>
+            <a href="#reviews" className="hover:text-[#f1683a] transition-colors py-1 text-amber-300">
+              Reviews
+            </a>
             <a href="#contact" className="hover:text-[#f1683a] transition-colors py-1 text-[#f1683a]">
               Contact Us
             </a>
@@ -254,6 +258,13 @@ export default function App() {
               className="block text-slate-300 hover:text-amber-400 py-1"
             >
               Featured Destinations
+            </a>
+            <a
+              href="#reviews"
+              onClick={() => setMobileMenuOpen(false)}
+              className="block text-amber-300 hover:text-amber-400 py-1"
+            >
+              Customer Reviews (5★)
             </a>
             <a
               href="#contact"
@@ -782,6 +793,9 @@ export default function App() {
         </div>
       </section>
 
+      {/* ✦ Customer Reviews (5-Star Testimonials) ✦ */}
+      <CustomerReviewsSection />
+
       {/* ✦ EXACT ADIYOGI "PLAN YOUR TOUR RIGHT NOW" CONTACT SECTION ✦ */}
       <AdiyogiContactSection />
 
@@ -840,6 +854,11 @@ export default function App() {
                 <li>
                   <a href="#destinations" className="hover:text-amber-300 transition">
                     Destinations
+                  </a>
+                </li>
+                <li>
+                  <a href="#reviews" className="hover:text-amber-300 transition">
+                    Customer Reviews (5★)
                   </a>
                 </li>
                 <li>
