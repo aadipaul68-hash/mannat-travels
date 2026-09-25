@@ -13,6 +13,7 @@ import {
   Clock,
   ArrowRight,
   Settings,
+  Plus,
   Sun,
   Moon,
 } from 'lucide-react';
@@ -70,6 +71,14 @@ export default function App() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isQuotePopupOpen, setIsQuotePopupOpen] = useState(false);
   const [isAdminModalOpen, setIsAdminModalOpen] = useState(false);
+  const [adminInitialTab, setAdminInitialTab] = useState<'popular' | 'bus' | 'holiday'>('popular');
+  const [adminInitialCreate, setAdminInitialCreate] = useState(false);
+
+  const openAdminModal = (tab: 'popular' | 'bus' | 'holiday' = 'popular', createNew: boolean = false) => {
+    setAdminInitialTab(tab);
+    setAdminInitialCreate(createNew);
+    setIsAdminModalOpen(true);
+  };
 
   // Theme Mode: Dark (default luxury black/gold) or Light (clean ivory/warm amber)
   const [theme, setTheme] = useState<'dark' | 'light'>(() => {
@@ -394,13 +403,20 @@ export default function App() {
           </div>
 
           {/* Quick Edit Bar */}
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-2.5">
             <button
-              onClick={() => setIsAdminModalOpen(true)}
-              className="px-4 py-2 rounded-lg border border-amber-500/40 bg-amber-950/40 hover:bg-amber-900/60 text-amber-300 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 transition"
+              onClick={() => openAdminModal('popular', true)}
+              className="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 transition shadow-sm cursor-pointer"
+            >
+              <Plus className="w-3.5 h-3.5" />
+              <span>+ Add Tour</span>
+            </button>
+            <button
+              onClick={() => openAdminModal('popular', false)}
+              className="px-4 py-2 rounded-lg border border-amber-500/40 bg-amber-950/40 hover:bg-amber-900/60 text-amber-300 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 transition cursor-pointer"
             >
               <Settings className="w-3.5 h-3.5" />
-              <span>Edit / Add Tours</span>
+              <span>Manage Tours</span>
             </button>
           </div>
         </div>
@@ -536,10 +552,17 @@ export default function App() {
               </p>
             </div>
 
-            <div className="flex items-center gap-3">
+            <div className="flex flex-wrap items-center gap-2.5">
               <button
-                onClick={() => setIsAdminModalOpen(true)}
-                className="px-4 py-2 rounded-lg border border-[#f1683a]/40 bg-[#f1683a]/15 hover:bg-[#f1683a] text-white text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 transition"
+                onClick={() => openAdminModal('bus', true)}
+                className="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 transition shadow-sm cursor-pointer"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                <span>+ Add Bus Tour</span>
+              </button>
+              <button
+                onClick={() => openAdminModal('bus', false)}
+                className="px-4 py-2 rounded-lg border border-[#f1683a]/40 bg-[#f1683a]/15 hover:bg-[#f1683a] text-white text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 transition cursor-pointer"
               >
                 <Settings className="w-3.5 h-3.5" />
                 <span>Manage Bus Tours</span>
@@ -668,13 +691,20 @@ export default function App() {
             </p>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-2.5">
             <button
-              onClick={() => setIsAdminModalOpen(true)}
-              className="px-4 py-2 rounded-lg border border-[#f1683a]/40 bg-[#f1683a]/15 hover:bg-[#f1683a] text-white text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 transition"
+              onClick={() => openAdminModal('holiday', true)}
+              className="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 transition shadow-sm cursor-pointer"
+            >
+              <Plus className="w-3.5 h-3.5" />
+              <span>+ Add Holiday Package</span>
+            </button>
+            <button
+              onClick={() => openAdminModal('holiday', false)}
+              className="px-4 py-2 rounded-lg border border-[#f1683a]/40 bg-[#f1683a]/15 hover:bg-[#f1683a] text-white text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 transition cursor-pointer"
             >
               <Settings className="w-3.5 h-3.5" />
-              <span>Manage Holiday Packages</span>
+              <span>Manage Packages</span>
             </button>
           </div>
         </div>
@@ -1024,6 +1054,8 @@ export default function App() {
         holidayPackages={holidayPackages}
         setHolidayPackages={setHolidayPackages}
         onResetToDefaults={handleResetToDefaults}
+        initialTab={adminInitialTab}
+        initialCreateMode={adminInitialCreate}
       />
 
     </div>
