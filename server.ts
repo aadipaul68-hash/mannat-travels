@@ -1,4 +1,5 @@
 import express from 'express';
+import { createServer as createHttpServer } from 'http';
 import { createServer as createViteServer } from 'vite';
 import { db } from './src/db/index.ts';
 import { tours, inquiries, users } from './src/db/schema.ts';
@@ -10,6 +11,7 @@ dotenv.config();
 
 async function startServer() {
   const app = express();
+  const httpServer = createHttpServer(app);
   const port = process.env.PORT || 3000;
 
   app.use(express.json({ limit: '10mb' }));
@@ -155,7 +157,13 @@ async function startServer() {
   // Mount Vite middleware for development
   if (process.env.NODE_ENV !== 'production') {
     const vite = await createViteServer({
-      server: { middlewareMode: true },
+      server: {
+        middlewareMode: true,
+        // Share the Express HTTP server so Vite's HMR WebSocket rides on the
+        // same (proxied) port instead of an unreachable separate port. Without
+        // this the client's @vite/client socket "closes without opening".
+        hmr: { server: httpServer },
+      },
       appType: 'spa',
     });
     app.use(vite.middlewares);
@@ -166,7 +174,7 @@ async function startServer() {
     });
   }
 
-  app.listen(port, () => {
+  httpServer.listen(port, () => {
     console.log(`Server running at http://localhost:${port}`);
   });
 }
