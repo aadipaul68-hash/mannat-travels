@@ -359,3 +359,94 @@
     height: 140px;
   }
 }
+
+/* =========================================================
+   Light Theme Luxury Styling Overrides
+   ========================================================= */
+
+.light-theme {
+  background-color: #f8fafc !important;
+  color: #0f172a !important;
+}
+
+.light-theme .header-glass {
+  background: rgba(255, 255, 255, 0.92) !important;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid rgba(226, 232, 240, 0.9) !important;
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
+}
+
+.light-theme header nav a {
+  color: #334155 !important;
+}
+
+.light-theme header nav a:hover {
+  color: #ea580c !important;
+}
+
+.light-theme header .font-serif.text-white {
+  color: #0f172a !important;
+}
+
+.light-theme section {
+  background-color: #f8fafc !important;
+  color: #1e293b !important;
+}
+
+.light-theme #popular-tours,
+.light-theme #why-choose,
+.light-theme #destinations,
+.light-theme #reviews {
+  background-color: #f8fafc !important;
+}
+
+.light-theme #packages-section,
+.light-theme #bus-tours-section {
+  background-color: #f1f5f9 !important;
+}
+
+.light-theme .font-serif.text-white,
+.light-theme h2.text-white,
+.light-theme h3.text-white,
+.light-theme h4.text-white {
+  color: #0f172a !important;
+}
+
+.light-theme p.text-slate-400,
+.light-theme p.text-slate-300,
+.light-theme span.text-slate-400,
+.light-theme span.text-slate-300 {
+  color: #475569 !important;
+}
+
+.light-theme .bg-slate-900,
+.light-theme .bg-slate-950,
+.light-theme .bg-\[\#080B11\],
+.light-theme .bg-\[\#0B0F19\],
+.light-theme .bg-\[\#0d1424\],
+.light-theme .bg-\[\#111a2f\],
+.light-theme .bg-\[\#0C111C\],
+.light-theme .bg-\[\#0F1523\] {
+  background-color: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  color: #0f172a !important;
+  box-shadow: 0 4px 15px -3px rgba(0, 0, 0, 0.06);
+}
+
+.light-theme .border-slate-800,
+.light-theme .border-slate-900,
+.light-theme .border-amber-500\/15,
+.light-theme .border-amber-500\/20,
+.light-theme .border-amber-500\/25 {
+  border-color: #e2e8f0 !important;
+}
+
+.light-theme footer {
+  background-color: #0f172a !important;
+  color: #94a3b8 !important;
+}
+
+.light-theme footer .text-white {
+  color: #f8fafc !important;
+}

@@ -13,6 +13,8 @@ import {
   Clock,
   ArrowRight,
   Settings,
+  Sun,
+  Moon,
 } from 'lucide-react';
 import { AdiyogiHeroSlider } from './components/AdiyogiHeroSlider';
 import { AdiyogiPopupModal } from './components/AdiyogiPopupModal';
@@ -69,6 +71,26 @@ export default function App() {
   const [isQuotePopupOpen, setIsQuotePopupOpen] = useState(false);
   const [isAdminModalOpen, setIsAdminModalOpen] = useState(false);
 
+  // Theme Mode: Dark (default luxury black/gold) or Light (clean ivory/warm amber)
+  const [theme, setTheme] = useState<'dark' | 'light'>(() => {
+    try {
+      const savedTheme = localStorage.getItem('mannat_theme_mode');
+      return (savedTheme as 'dark' | 'light') || 'dark';
+    } catch {
+      return 'dark';
+    }
+  });
+
+  const toggleTheme = () => {
+    const nextTheme = theme === 'dark' ? 'light' : 'dark';
+    setTheme(nextTheme);
+    try {
+      localStorage.setItem('mannat_theme_mode', nextTheme);
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
   // Sync state changes to localStorage
   useEffect(() => {
     localStorage.setItem(POPULAR_STORAGE_KEY, JSON.stringify(popularTours));
@@ -107,7 +129,7 @@ export default function App() {
   const visibleHolidayPackages = holidayPackages.filter((t) => t.status !== 'hidden');
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#080B11] text-slate-100 font-sans selection:bg-[#f1683a] selection:text-white">
+    <div className={`min-h-screen flex flex-col font-sans selection:bg-[#f1683a] selection:text-white transition-colors duration-300 ${theme === 'light' ? 'light-theme bg-[#F8FAFC] text-slate-800' : 'bg-[#080B11] text-slate-100'}`}>
       
       {/* ✦ Header Glass ✦ */}
       <header className="header-glass fixed top-0 left-0 w-full z-50 transition-all duration-300">
@@ -158,6 +180,30 @@ export default function App() {
 
           {/* Header Action Buttons */}
           <div className="hidden sm:flex items-center gap-3">
+            {/* Theme Toggle Button (Dark / Light) */}
+            <button
+              onClick={toggleTheme}
+              title={`Switch to ${theme === 'dark' ? 'Light' : 'Dark'} mode`}
+              className={`p-2 rounded-lg border transition cursor-pointer flex items-center gap-1.5 text-xs font-semibold ${
+                theme === 'dark'
+                  ? 'border-amber-500/40 bg-slate-900/80 text-amber-300 hover:bg-slate-800'
+                  : 'border-slate-300 bg-white text-slate-800 hover:bg-slate-100 shadow-sm'
+              }`}
+              aria-label="Toggle Theme"
+            >
+              {theme === 'dark' ? (
+                <>
+                  <Sun className="w-4 h-4 text-amber-400" />
+                  <span className="hidden lg:inline text-[11px]">Light</span>
+                </>
+              ) : (
+                <>
+                  <Moon className="w-4 h-4 text-indigo-600" />
+                  <span className="hidden lg:inline text-[11px]">Dark</span>
+                </>
+              )}
+            </button>
+
             {/* Manage Packages Button (Admin Trigger) */}
             <button
               onClick={() => setIsAdminModalOpen(true)}
@@ -191,6 +237,17 @@ export default function App() {
 
           {/* Mobile hamburger */}
           <div className="flex items-center gap-2 md:hidden">
+            <button
+              onClick={toggleTheme}
+              className={`p-2 rounded-lg border text-xs font-bold ${
+                theme === 'dark'
+                  ? 'text-amber-300 bg-slate-900 border-amber-500/40'
+                  : 'text-slate-800 bg-white border-slate-300 shadow-sm'
+              }`}
+              aria-label="Toggle Theme"
+            >
+              {theme === 'dark' ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-indigo-600" />}
+            </button>
             <button
               onClick={() => setIsAdminModalOpen(true)}
               className="p-2 text-amber-300 bg-amber-950/40 border border-amber-500/40 rounded-lg text-xs font-bold"
@@ -275,6 +332,20 @@ export default function App() {
             </a>
 
             <div className="pt-4 border-t border-slate-800 flex flex-col gap-3">
+              <button
+                onClick={() => {
+                  toggleTheme();
+                }}
+                className={`w-full py-3 rounded-lg uppercase tracking-wider text-xs font-bold flex items-center justify-center gap-2 border transition ${
+                  theme === 'dark'
+                    ? 'bg-slate-900 border-amber-500/40 text-amber-300'
+                    : 'bg-white border-slate-300 text-slate-800 shadow-sm'
+                }`}
+              >
+                {theme === 'dark' ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-indigo-600" />}
+                <span>Switch to {theme === 'dark' ? 'Light Theme' : 'Dark Theme'}</span>
+              </button>
+
               <button
                 onClick={() => {
                   setMobileMenuOpen(false);
