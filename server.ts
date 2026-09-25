@@ -19,10 +19,14 @@ async function startServer() {
     const vite = await createViteServer({
       server: {
         middlewareMode: true,
-        // Share the Express HTTP server so Vite's HMR WebSocket rides on the
-        // same (proxied) port instead of an unreachable separate port. Without
-        // this the client's @vite/client socket "closes without opening".
-        hmr: { server: httpServer },
+        // Attach Vite's HMR WebSocket to the shared Express HTTP server so it
+        // rides on the same (proxied) port as the page instead of Vite's
+        // default standalone port 24678, which the preview proxy doesn't
+        // expose. Without this the client's @vite/client socket "closes
+        // without opening". In Vite 8 the parent server must be provided via
+        // `server.ws.server` (this is what sets `wsCustomServer` internally);
+        // `middlewareMode.server` and the old `hmr.server` do not bind it.
+        ws: { server: httpServer },
       },
       appType: 'spa',
     });
