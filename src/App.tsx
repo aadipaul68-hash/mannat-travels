@@ -13,6 +13,7 @@ import {
   Clock,
   ArrowRight,
   Settings,
+  Lock,
   Sun,
   Moon,
 } from 'lucide-react';
@@ -204,14 +205,14 @@ export default function App() {
               )}
             </button>
 
-            {/* Manage Packages Button (Admin Trigger) */}
+            {/* Admin Panel Trigger (PIN Protected) */}
             <button
               onClick={() => setIsAdminModalOpen(true)}
-              title="Manage, Add, Edit, Delete or Hide Packages"
+              title="Admin Panel (PIN Protected)"
               className="px-3 py-2 rounded-lg border border-amber-500/40 bg-amber-950/40 hover:bg-amber-900/60 text-amber-300 text-xs font-bold uppercase tracking-wider transition flex items-center gap-1.5 cursor-pointer shadow-sm"
             >
-              <Settings className="w-3.5 h-3.5" />
-              <span>Manage Packages</span>
+              <Lock className="w-3.5 h-3.5 text-amber-400" />
+              <span>Admin Panel</span>
             </button>
 
             <button
@@ -351,10 +352,10 @@ export default function App() {
                   setMobileMenuOpen(false);
                   setIsAdminModalOpen(true);
                 }}
-                className="w-full py-3 bg-amber-600 hover:bg-amber-500 text-slate-950 font-bold rounded-lg uppercase tracking-wider text-xs flex items-center justify-center gap-2"
+                className="w-full py-3 bg-amber-600 hover:bg-amber-500 text-slate-950 font-bold rounded-lg uppercase tracking-wider text-xs flex items-center justify-center gap-2 cursor-pointer"
               >
-                <Settings className="w-4 h-4" />
-                <span>Manage / Add / Delete Packages</span>
+                <Lock className="w-4 h-4" />
+                <span>Admin Login (गुप्त एडमिन पैनल)</span>
               </button>
 
               <button
@@ -391,17 +392,6 @@ export default function App() {
             <p className="text-slate-400 text-sm sm:text-base max-w-2xl leading-relaxed">
               Experience hand-picked holiday itineraries and divine pilgrimages across the snow peaks of Himachal and the tranquil valleys of Uttarakhand.
             </p>
-          </div>
-
-          {/* Quick Edit Bar */}
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => setIsAdminModalOpen(true)}
-              className="px-4 py-2 rounded-lg border border-amber-500/40 bg-amber-950/40 hover:bg-amber-900/60 text-amber-300 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 transition"
-            >
-              <Settings className="w-3.5 h-3.5" />
-              <span>Edit / Add Tours</span>
-            </button>
           </div>
         </div>
 
@@ -535,16 +525,6 @@ export default function App() {
                 Departing regularly from Muzaffarnagar (Central Bus Stand), Meerut Bypass, and Delhi NCR with pure satvik food and experienced yatra managers.
               </p>
             </div>
-
-            <div className="flex items-center gap-3">
-              <button
-                onClick={() => setIsAdminModalOpen(true)}
-                className="px-4 py-2 rounded-lg border border-[#f1683a]/40 bg-[#f1683a]/15 hover:bg-[#f1683a] text-white text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 transition"
-              >
-                <Settings className="w-3.5 h-3.5" />
-                <span>Manage Bus Tours</span>
-              </button>
-            </div>
           </div>
 
           {visibleBusTours.length === 0 ? (
@@ -666,16 +646,6 @@ export default function App() {
             <p className="text-slate-400 text-sm sm:text-base max-w-2xl leading-relaxed">
               From Kainchi Dham & Nainital to Kashmir Houseboats, Manali snow adventures, and Goa beach holidays.
             </p>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => setIsAdminModalOpen(true)}
-              className="px-4 py-2 rounded-lg border border-[#f1683a]/40 bg-[#f1683a]/15 hover:bg-[#f1683a] text-white text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 transition"
-            >
-              <Settings className="w-3.5 h-3.5" />
-              <span>Manage Holiday Packages</span>
-            </button>
           </div>
         </div>
 
@@ -997,9 +967,17 @@ export default function App() {
             <p>
               © {new Date().getFullYear()} Mannat Tour and Travels. All Rights Reserved.
             </p>
-            <p className="text-[11px]">
-              Crafted for Unforgettable Himalayan Journeys & Holy Pilgrimages.
-            </p>
+            <div className="flex items-center gap-4 text-[11px]">
+              <span>Crafted for Unforgettable Himalayan Journeys & Holy Pilgrimages.</span>
+              <button
+                onClick={() => setIsAdminModalOpen(true)}
+                className="text-slate-600 hover:text-amber-400/80 transition flex items-center gap-1 cursor-pointer"
+                title="Admin Only Access"
+              >
+                <Lock className="w-3 h-3" />
+                <span>Admin Login</span>
+              </button>
+            </div>
           </div>
         </div>
       </footer>
