@@ -32,8 +32,6 @@ interface AdminPanelModalProps {
   holidayPackages: TourItem[];
   setHolidayPackages: React.Dispatch<React.SetStateAction<TourItem[]>>;
   onResetToDefaults: () => void;
-  initialTab?: 'popular' | 'bus' | 'holiday';
-  initialCreateMode?: boolean;
 }
 
 const ADMIN_PASS_KEY = 'mannat_admin_password_hash';
@@ -66,9 +64,7 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
   setBusTours,
   holidayPackages,
   setHolidayPackages,
-  onResetToDefaults,
-  initialTab = 'popular',
-  initialCreateMode = false
+  onResetToDefaults
 }) => {
   // Authentication State
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -78,39 +74,10 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
   const [newPin, setNewPin] = useState('');
   const [savedSuccessMsg, setSavedSuccessMsg] = useState('');
 
-  const [activeTab, setActiveTab] = useState<'popular' | 'bus' | 'holiday'>(initialTab);
+  const [activeTab, setActiveTab] = useState<'popular' | 'bus' | 'holiday'>('popular');
   const [isEditing, setIsEditing] = useState<string | null>(null);
-  const [isCreatingNew, setIsCreatingNew] = useState(initialCreateMode);
+  const [isCreatingNew, setIsCreatingNew] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-
-  // Sync tab and create mode when modal opens or initial props change
-  useEffect(() => {
-    if (isOpen) {
-      if (initialTab) setActiveTab(initialTab);
-      if (initialCreateMode) {
-        setIsCreatingNew(true);
-        setIsEditing(null);
-        setFormData({
-          id: `tour-custom-${Date.now()}`,
-          title: '',
-          category: initialTab === 'bus' ? 'Spiritual Yatras' : initialTab === 'holiday' ? 'Holiday Packages' : 'Curated Tours',
-          destination: '',
-          duration: '2 Nights / 3 Days',
-          price: 2999,
-          originalPrice: 3999,
-          availableSeats: 15,
-          totalSeats: 35,
-          busType: 'Deluxe 2x2 AC Coach',
-          vehicle: 'Deluxe Bus / Ertiga',
-          route: '',
-          image: '/images/kaichi-dham.jpg',
-          description: '',
-          badge: 'New Package',
-          status: 'active'
-        });
-      }
-    }
-  }, [isOpen, initialTab, initialCreateMode]);
 
   // Form State for Editing/Creating
   const [formData, setFormData] = useState<Partial<TourItem>>({
@@ -463,18 +430,6 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
                 className="w-full py-3.5 rounded-xl bg-[#f1683a] hover:bg-[#d95325] text-white font-bold text-xs uppercase tracking-widest transition shadow-lg shadow-[#f1683a]/30 cursor-pointer"
               >
                 UNLOCK ADMIN PANEL →
-              </button>
-
-              <button
-                type="button"
-                onClick={() => {
-                  setIsAuthenticated(true);
-                  setPinError('');
-                }}
-                className="w-full py-2.5 rounded-xl border border-amber-500/40 bg-amber-950/30 hover:bg-amber-900/50 text-amber-300 font-bold text-xs uppercase tracking-wider transition flex items-center justify-center gap-1.5 cursor-pointer"
-              >
-                <KeyRound className="w-3.5 h-3.5 text-amber-400" />
-                <span>1-क्लिक अनलॉक (Quick Unlock: 8445)</span>
               </button>
             </form>
 
