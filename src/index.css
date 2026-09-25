@@ -1,0 +1,361 @@
+@import "tailwindcss";
+
+@layer utilities {
+  .text-gold-gradient {
+    background: linear-gradient(135deg, #f3e5ab 0%, #d4af37 50%, #aa820a 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .luxury-card {
+    background: #0E1422;
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    border-radius: 1rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .luxury-card:hover {
+    border-color: rgba(212, 175, 55, 0.45);
+    box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5), 0 0 20px -5px rgba(212, 175, 55, 0.15);
+  }
+
+  .btn-luxury-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    background: linear-gradient(135deg, #f3e5ab 0%, #d4af37 50%, #aa820a 100%);
+    color: #080B11;
+    font-weight: 800;
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 14px 0 rgba(212, 175, 55, 0.25);
+  }
+
+  .btn-luxury-primary:hover {
+    filter: brightness(1.1);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px 0 rgba(212, 175, 55, 0.35);
+  }
+
+  .btn-luxury-outline {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    border: 1px solid rgba(212, 175, 55, 0.4);
+    background: rgba(14, 20, 34, 0.6);
+    backdrop-filter: blur(8px);
+    color: #f3e5ab;
+    font-weight: 700;
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    transition: all 0.2s ease;
+  }
+
+  .btn-luxury-outline:hover {
+    background: rgba(212, 175, 55, 0.15);
+    border-color: #d4af37;
+    color: #ffffff;
+  }
+
+  .header-glass {
+    background: rgba(8, 11, 17, 0.88);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-bottom: 1px solid rgba(212, 175, 55, 0.15);
+  }
+
+  .hero-glow {
+    background: radial-gradient(circle at 50% 30%, rgba(212, 175, 55, 0.15) 0%, rgba(13, 19, 31, 0.05) 50%, transparent 80%);
+  }
+}
+
+/* =========================================================
+   Adiyogi Tour & Travels Exact Hero Slider Styles
+   ========================================================= */
+
+.adiyogi-carousel {
+  height: 100vh;
+  min-height: 640px;
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+  background-color: #000;
+}
+
+.adiyogi-carousel::after {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.45);
+  top: 0;
+  left: 0;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.adiyogi-carousel .list {
+  width: 100%;
+  height: 100%;
+}
+
+.adiyogi-carousel .list .item {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  inset: 0 0 0 0;
+}
+
+.adiyogi-carousel .list .item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.adiyogi-carousel .list .item .content {
+  position: absolute;
+  top: 22%;
+  width: 1140px;
+  max-width: 86%;
+  left: 50%;
+  transform: translateX(-50%);
+  padding-right: 28%;
+  box-sizing: border-box;
+  color: #fff;
+  text-shadow: 0 5px 10px rgba(0, 0, 0, 0.4);
+  z-index: 20;
+}
+
+.adiyogi-carousel .list .item .author {
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: #f3e5ab;
+  margin-bottom: 8px;
+}
+
+.adiyogi-carousel .list .item .title,
+.adiyogi-carousel .list .item .topic {
+  font-size: clamp(2.5rem, 6vw, 4.8rem);
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: 1px;
+}
+
+.adiyogi-carousel .list .item .topic {
+  color: #f1683a;
+}
+
+.adiyogi-carousel .list .item .des {
+  font-weight: 300;
+  font-size: 15px;
+  width: 90%;
+  max-width: 620px;
+  padding: 16px 0;
+  line-height: 1.6;
+  color: #e2e8f0;
+}
+
+.adiyogi-carousel .list .item .buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 15px;
+}
+
+/* Thumbnail strip */
+.adiyogi-thumbnail {
+  position: absolute;
+  bottom: 50px;
+  left: 50%;
+  width: max-content;
+  max-width: calc(100% - 40px);
+  overflow-x: auto;
+  z-index: 30;
+  display: flex;
+  gap: 16px;
+  scrollbar-width: none;
+}
+
+.adiyogi-thumbnail::-webkit-scrollbar {
+  display: none;
+}
+
+.adiyogi-thumbnail .item {
+  width: 140px;
+  height: 200px;
+  flex-shrink: 0;
+  position: relative;
+  cursor: pointer;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  transition: transform 0.3s ease, border-color 0.3s ease;
+}
+
+.adiyogi-thumbnail .item:hover {
+  transform: translateY(-5px);
+  border-color: #f1683a;
+}
+
+.adiyogi-thumbnail .item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 16px;
+}
+
+.adiyogi-thumbnail .item .content {
+  color: #fff;
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  right: 10px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+.adiyogi-thumbnail .item .content .title {
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.adiyogi-thumbnail .item .content .description {
+  font-size: 10px;
+  font-weight: 400;
+  color: #f3e5ab;
+}
+
+/* Arrows */
+.adiyogi-arrows {
+  position: absolute;
+  top: 80%;
+  right: 52%;
+  z-index: 35;
+  width: 300px;
+  max-width: 30%;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.adiyogi-arrows button {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background-color: rgba(205, 196, 196, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  color: #fff;
+  font-family: monospace;
+  font-size: 18px;
+  font-weight: bold;
+  transition: 0.3s;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  backdrop-filter: blur(4px);
+  cursor: pointer;
+}
+
+.adiyogi-arrows button:hover {
+  background-color: #fff;
+  color: #000;
+}
+
+/* Running progress line */
+.adiyogi-carousel .time {
+  position: absolute;
+  z-index: 40;
+  width: 0%;
+  height: 3px;
+  background-color: #f1683a;
+  left: 0;
+  top: 0;
+}
+
+/* Active slide animation */
+.adiyogi-carousel .list .item:nth-child(1) {
+  z-index: 1;
+}
+
+.adiyogi-carousel .list .item:nth-child(1) .content .author,
+.adiyogi-carousel .list .item:nth-child(1) .content .title,
+.adiyogi-carousel .list .item:nth-child(1) .content .topic,
+.adiyogi-carousel .list .item:nth-child(1) .content .des,
+.adiyogi-carousel .list .item:nth-child(1) .content .buttons {
+  transform: translateY(50px);
+  filter: blur(20px);
+  opacity: 0;
+  animation: adiyogiShowContent 0.5s 0.2s linear 1 forwards;
+}
+
+@keyframes adiyogiShowContent {
+  to {
+    transform: translateY(0px);
+    filter: blur(0px);
+    opacity: 1;
+  }
+}
+
+.adiyogi-carousel .list .item:nth-child(1) .content .title {
+  animation-delay: 0.4s !important;
+}
+
+.adiyogi-carousel .list .item:nth-child(1) .content .topic {
+  animation-delay: 0.6s !important;
+}
+
+.adiyogi-carousel .list .item:nth-child(1) .content .des {
+  animation-delay: 0.8s !important;
+}
+
+.adiyogi-carousel .list .item:nth-child(1) .content .buttons {
+  animation-delay: 1s !important;
+}
+
+/* Responsive adjustments */
+@media screen and (max-width: 768px) {
+  .adiyogi-carousel .list .item .content {
+    padding-right: 0;
+    top: 16%;
+    width: 92%;
+  }
+
+  .adiyogi-carousel .list .item .title,
+  .adiyogi-carousel .list .item .topic {
+    font-size: 32px;
+  }
+
+  .adiyogi-carousel .list .item .des {
+    font-size: 13px;
+    width: 100%;
+  }
+
+  .adiyogi-arrows {
+    top: 72%;
+    left: 20px;
+    right: auto;
+  }
+
+  .adiyogi-thumbnail {
+    bottom: 24px;
+    left: 20px;
+    gap: 10px;
+  }
+
+  .adiyogi-thumbnail .item {
+    width: 100px;
+    height: 140px;
+  }
+}
