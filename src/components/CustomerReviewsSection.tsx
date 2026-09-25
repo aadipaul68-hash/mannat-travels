@@ -10,6 +10,7 @@ interface Testimonial {
   trip: string;
   date: string;
   rating: number;
+  photoUrl: string;
   initials: string;
   avatarBg: string;
   review: string;
@@ -27,6 +28,7 @@ const STATIC_REVIEWS: Testimonial[] = [
     trip: 'कैंची धाम नीम करोली बाबा दर्शन (2x2 AC Bus)',
     date: 'फरवरी 2026',
     rating: 5,
+    photoUrl: 'https://images.unsplash.com/photo-1544717305-2782549b5136?w=200&auto=format&fit=crop&q=80',
     initials: 'RS',
     avatarBg: 'bg-amber-600',
     review:
@@ -43,6 +45,7 @@ const STATIC_REVIEWS: Testimonial[] = [
     trip: 'चार धाम यात्रा (केदारनाथ-बद्रीनाथ धाम)',
     date: 'अक्टूबर 2025',
     rating: 5,
+    photoUrl: 'https://images.unsplash.com/photo-1566492031773-4f4e44671857?w=200&auto=format&fit=crop&q=80',
     initials: 'AV',
     avatarBg: 'bg-emerald-600',
     review:
@@ -59,6 +62,7 @@ const STATIC_REVIEWS: Testimonial[] = [
     trip: 'मनाली, सोलांग वैली व रोहतांग पास स्नो टूर',
     date: 'जनवरी 2026',
     rating: 5,
+    photoUrl: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=200&auto=format&fit=crop&q=80',
     initials: 'VS',
     avatarBg: 'bg-indigo-600',
     review:
@@ -75,6 +79,7 @@ const STATIC_REVIEWS: Testimonial[] = [
     trip: 'अयोध्या धाम (राम लला दर्शन) व काशी विश्वनाथ',
     date: 'जनवरी 2026',
     rating: 5,
+    photoUrl: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=200&auto=format&fit=crop&q=80',
     initials: 'SG',
     avatarBg: 'bg-rose-600',
     review:
@@ -91,6 +96,7 @@ const STATIC_REVIEWS: Testimonial[] = [
     trip: 'खाटू श्याम जी व सालासर बालाजी दर्शन',
     date: 'दिसंबर 2025',
     rating: 5,
+    photoUrl: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=200&auto=format&fit=crop&q=80',
     initials: 'GT',
     avatarBg: 'bg-cyan-600',
     review:
@@ -107,6 +113,7 @@ const STATIC_REVIEWS: Testimonial[] = [
     trip: 'माँ वैष्णो देवी कटरा व शिवखोड़ी यात्रा',
     date: 'नवंबर 2025',
     rating: 5,
+    photoUrl: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&auto=format&fit=crop&q=80',
     initials: 'KS',
     avatarBg: 'bg-amber-700',
     review:
@@ -269,10 +276,16 @@ export const CustomerReviewsSection: React.FC = () => {
 
             {/* Author Profile */}
             <div className="pt-4 border-t border-slate-800/80 flex items-center gap-3">
-              <div
-                className={`w-11 h-11 rounded-full ${item.avatarBg} text-white font-bold flex items-center justify-center text-sm border-2 border-amber-400/40 shadow-md shrink-0`}
-              >
-                {item.initials}
+              <div className="relative shrink-0">
+                <img
+                  src={item.photoUrl}
+                  alt={item.name}
+                  className="w-12 h-12 rounded-full object-cover border-2 border-amber-400/50 shadow-md"
+                  onError={(e) => {
+                    // Fallback to initials avatar if image network issues
+                    (e.target as HTMLElement).style.display = 'none';
+                  }}
+                />
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-1.5">
