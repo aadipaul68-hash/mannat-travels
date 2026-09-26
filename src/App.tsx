@@ -237,7 +237,7 @@ export default function App() {
           </div>
 
           {/* Mobile hamburger */}
-          <div className="flex items-center gap-2 md:hidden">
+          <div className="flex items-center gap-1.5 md:hidden">
             <button
               onClick={toggleTheme}
               className={`p-2 rounded-lg border text-xs font-bold ${
@@ -253,21 +253,22 @@ export default function App() {
               onClick={() => setIsAdminModalOpen(true)}
               className="p-2 text-amber-300 bg-amber-950/40 border border-amber-500/40 rounded-lg text-xs font-bold"
               aria-label="Manage Packages"
+              title="Admin Panel"
             >
-              <Settings className="w-4 h-4" />
+              <Lock className="w-4 h-4 text-amber-400" />
             </button>
             <button
               onClick={() => setIsQuotePopupOpen(true)}
-              className="px-2.5 py-1.5 text-xs bg-[#f1683a] text-white font-bold rounded"
+              className="px-2.5 py-1.5 text-xs bg-[#f1683a] text-white font-bold rounded shadow-sm"
             >
               Quote
             </button>
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 text-slate-300 hover:text-white"
+              className="p-2 text-slate-300 hover:text-white rounded-lg bg-slate-900/60 border border-slate-800"
               aria-label="Toggle menu"
             >
-              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
           </div>
         </div>
@@ -981,6 +982,39 @@ export default function App() {
           </div>
         </div>
       </footer>
+
+      {/* Spacing for mobile bottom floating bar */}
+      <div className="h-16 md:hidden" />
+
+      {/* ✦ Mobile Floating Action Bar (Sticky at Bottom for smartphones) ✦ */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#080B11]/95 backdrop-blur-lg border-t border-amber-500/20 px-3 py-2 flex items-center justify-between gap-2 shadow-[0_-4px_20px_rgba(0,0,0,0.5)]">
+        <a
+          href={`tel:${SITE_INFO.phone}`}
+          className="flex-1 py-2.5 px-2 rounded-xl bg-slate-900 border border-slate-700 hover:border-amber-400 text-white text-xs font-bold flex items-center justify-center gap-1.5 transition active:scale-95"
+        >
+          <Phone className="w-3.5 h-3.5 text-amber-400" />
+          <span>Call Now</span>
+        </a>
+
+        <a
+          href={getGeneralWhatsAppUrl()}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex-1 py-2.5 px-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold flex items-center justify-center gap-1.5 transition shadow-sm active:scale-95"
+        >
+          <MessageCircle className="w-3.5 h-3.5 fill-white" />
+          <span>WhatsApp</span>
+        </a>
+
+        <button
+          type="button"
+          onClick={() => setIsQuotePopupOpen(true)}
+          className="flex-1 py-2.5 px-2 rounded-xl bg-gradient-to-r from-[#f1683a] to-amber-500 text-white text-xs font-bold flex items-center justify-center gap-1.5 transition shadow-sm active:scale-95 cursor-pointer"
+        >
+          <Sparkles className="w-3.5 h-3.5" />
+          <span>Get Quote</span>
+        </button>
+      </div>
 
       {/* ✦ Tour Details Modal ✦ */}
       <TourDetailModal tour={selectedTour} onClose={() => setSelectedTour(null)} />

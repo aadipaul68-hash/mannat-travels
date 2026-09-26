@@ -39,7 +39,7 @@ export const AdiyogiPopupModal: React.FC<AdiyogiPopupModalProps> = ({ isOpen, on
 
   return (
     <div
-      className="fixed bottom-4 right-4 z-[9999] max-w-[340px] sm:max-w-[380px] w-full"
+      className="fixed inset-x-2 bottom-16 sm:inset-x-auto sm:bottom-4 sm:right-4 z-[9999] sm:max-w-[380px] w-auto max-h-[85vh] overflow-y-auto"
       role="dialog"
       aria-modal="true"
     >
