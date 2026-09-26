@@ -232,7 +232,7 @@ export default function App() {
               onClick={() => setIsQuotePopupOpen(true)}
               className="px-3.5 py-2 rounded-lg border border-[#f1683a]/40 bg-[#f1683a]/15 hover:bg-[#f1683a] text-white text-xs font-bold uppercase tracking-wider transition cursor-pointer"
             >
-              Get Free Quote
+              Contact Us
             </button>
             <a
               href={getGeneralWhatsAppUrl()}
@@ -398,7 +398,7 @@ export default function App() {
                 }}
                 className="w-full py-3 bg-[#f1683a] text-white font-bold rounded-lg uppercase tracking-wider text-xs"
               >
-                Get Free Quote Popup
+                Contact Us (हमसे संपर्क करें)
               </button>
               <a href={`tel:${SITE_INFO.phone}`} className="btn-luxury-primary w-full text-center">
                 Call: {SITE_INFO.phone}

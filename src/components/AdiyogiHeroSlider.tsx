@@ -168,7 +168,7 @@ export const AdiyogiHeroSlider: React.FC<AdiyogiHeroSliderProps> = ({ onOpenQuot
                         onClick={onOpenQuoteModal}
                         className="btn-luxury-outline !px-7 !py-3.5 !text-xs font-bold cursor-pointer"
                       >
-                        <span>GET FREE QUOTE</span>
+                        <span>CONTACT US</span>
                       </button>
                       <a
                         href={`https://wa.me/${SITE_INFO.whatsappRaw}?text=${encodeURIComponent(
