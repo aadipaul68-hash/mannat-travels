@@ -109,13 +109,13 @@ export const AdiyogiHeroSlider: React.FC<AdiyogiHeroSliderProps> = ({ onOpenQuot
     if (autoNextRef.current) clearTimeout(autoNextRef.current);
     autoNextRef.current = setTimeout(() => {
       handleNext();
-    }, 3000);
+    }, 2000);
   };
 
   useEffect(() => {
     autoNextRef.current = setTimeout(() => {
       handleNext();
-    }, 3000);
+    }, 2000);
 
     return () => {
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
