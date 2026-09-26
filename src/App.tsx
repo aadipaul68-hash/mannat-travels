@@ -407,7 +407,7 @@ export default function App() {
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-7">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-7">
             {visiblePopularTours.map((tour) => {
               const price = Number(tour.price || 0);
               const originalPrice = Number(tour.originalPrice || 0);
@@ -415,10 +415,10 @@ export default function App() {
               const whatsappUrl = getWhatsAppBookingUrl(tour);
 
               return (
-                <div key={tour.id} className="luxury-card flex flex-col group overflow-hidden">
-                  {/* Image Banner */}
+                <div key={tour.id} className="luxury-card flex flex-row sm:flex-col group overflow-hidden h-36 sm:h-auto">
+                  {/* Image Banner: half height / compact on mobile */}
                   <div
-                    className="relative aspect-[4/3] overflow-hidden bg-slate-900 cursor-pointer"
+                    className="relative w-36 sm:w-full h-full sm:aspect-[4/3] shrink-0 overflow-hidden bg-slate-900 cursor-pointer"
                     onClick={() => setSelectedTour(tour)}
                   >
                     <img
@@ -427,71 +427,71 @@ export default function App() {
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-[#0E1422] via-transparent to-black/20 pointer-events-none" />
-                    <div className="absolute top-3 left-3 bg-black/75 backdrop-blur-md px-2.5 py-1 rounded text-[11px] font-semibold tracking-wider uppercase text-amber-300 border border-amber-500/30">
+                    <div className="absolute top-2 left-2 bg-black/80 backdrop-blur-md px-1.5 py-0.5 rounded text-[9px] sm:text-[11px] font-semibold tracking-wider uppercase text-amber-300 border border-amber-500/30">
                       {tour.duration || 'Multi-Day'}
                     </div>
-                    <div className="absolute bottom-3 left-3 bg-black/70 backdrop-blur-xs px-2.5 py-0.5 rounded text-[11px] text-slate-300 flex items-center gap-1">
-                      <MapPin className="w-3 h-3 text-amber-400" />
-                      <span className="truncate max-w-[200px]">{tour.destination}</span>
+                    <div className="absolute bottom-1.5 left-1.5 bg-black/70 backdrop-blur-xs px-1.5 py-0.5 rounded text-[9px] sm:text-[11px] text-slate-300 flex items-center gap-1">
+                      <MapPin className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-amber-400" />
+                      <span className="truncate max-w-[100px] sm:max-w-[200px]">{tour.destination}</span>
                     </div>
                   </div>
 
-                  {/* Card Content */}
-                  <div className="p-5 sm:p-6 flex-1 flex flex-col justify-between">
+                  {/* Card Content: compact half-height design */}
+                  <div className="p-2.5 sm:p-5 flex-1 flex flex-col justify-between overflow-hidden">
                     <div>
                       <h3
                         onClick={() => setSelectedTour(tour)}
-                        className="font-serif text-lg sm:text-xl font-bold text-white group-hover:text-amber-300 transition-colors mb-2 cursor-pointer line-clamp-2"
+                        className="font-serif text-xs sm:text-base font-bold text-white group-hover:text-amber-300 transition-colors mb-0.5 sm:mb-2 cursor-pointer line-clamp-1 sm:line-clamp-2 leading-snug"
                       >
                         {tour.title}
                       </h3>
-                      <p className="text-slate-400 text-xs sm:text-sm leading-relaxed mb-4 line-clamp-3">
+                      <p className="hidden sm:block text-slate-400 text-xs sm:text-sm leading-relaxed mb-4 line-clamp-2">
                         {tour.description}
                       </p>
                     </div>
 
-                    <div className="pt-4 border-t border-slate-800/80">
-                      <div className="flex items-baseline justify-between mb-4">
+                    <div className="pt-1.5 sm:pt-4 border-t border-slate-800/80">
+                      <div className="flex items-baseline justify-between mb-1.5 sm:mb-4">
                         <div>
-                          <span className="text-[10px] uppercase tracking-wider text-slate-500 block font-semibold">
+                          <span className="hidden sm:block text-[10px] uppercase tracking-wider text-slate-500 font-semibold">
                             Starting from
                           </span>
-                          <div className="flex items-baseline gap-1.5 flex-wrap">
+                          <div className="flex items-baseline gap-1 flex-wrap">
                             {hasDiscount && (
-                              <span className="text-xs text-slate-500 line-through">
+                              <span className="text-[10px] sm:text-xs text-slate-500 line-through">
                                 ₹{originalPrice.toLocaleString('en-IN')}
                               </span>
                             )}
-                            <span className="text-lg font-bold text-amber-400">
+                            <span className="text-sm sm:text-lg font-bold text-amber-400">
                               ₹{price.toLocaleString('en-IN')}
                             </span>
-                            <span className="text-[10px] text-slate-400">/ person</span>
+                            <span className="text-[9px] sm:text-[10px] text-slate-400">/ person</span>
                           </div>
                         </div>
 
                         {tour.availableSeats && Number(tour.availableSeats) <= 6 && (
-                          <span className="text-[10px] text-red-400 font-bold bg-red-950/40 border border-red-800/50 px-2 py-0.5 rounded">
-                            Only {tour.availableSeats} Left
+                          <span className="text-[9px] text-red-400 font-bold bg-red-950/40 border border-red-800/50 px-1.5 py-0.5 rounded">
+                            {tour.availableSeats} left
                           </span>
                         )}
                       </div>
 
-                      <div className="grid grid-cols-2 gap-2">
+                      <div className="grid grid-cols-2 gap-1.5">
                         <button
                           type="button"
                           onClick={() => setSelectedTour(tour)}
-                          className="inline-flex items-center justify-center gap-1 px-3 py-2 rounded text-xs font-semibold uppercase tracking-wider bg-slate-800/90 hover:bg-amber-500 hover:text-slate-950 text-white transition-all duration-200 cursor-pointer active:scale-95"
+                          className="inline-flex items-center justify-center gap-1 px-2 py-1 sm:py-2 rounded text-[10px] sm:text-xs font-semibold uppercase tracking-wider bg-slate-800/90 hover:bg-amber-500 hover:text-slate-950 text-white transition-all cursor-pointer active:scale-95"
                         >
-                          <Eye className="w-3.5 h-3.5" />
-                          <span>DETAILS</span>
+                          <Eye className="w-3 h-3" />
+                          <span>INFO</span>
                         </button>
                         <a
                           href={whatsappUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="inline-flex items-center justify-center gap-1 px-3 py-2 rounded text-xs font-bold uppercase tracking-wider bg-emerald-600 hover:bg-emerald-500 text-white transition-all duration-200 text-center active:scale-95 shadow-sm"
+                          className="inline-flex items-center justify-center gap-1 px-2 py-1 sm:py-2 rounded text-[10px] sm:text-xs font-bold uppercase tracking-wider bg-emerald-600 hover:bg-emerald-500 text-white transition-all text-center active:scale-95 shadow-sm"
                         >
-                          <MessageCircle className="w-3.5 h-3.5 fill-white" />
+                          <MessageCircle className="w-3 h-3 fill-white" />
                           <span>BOOK</span>
                         </a>
                       </div>
@@ -539,13 +539,13 @@ export default function App() {
               </button>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-8">
               {visibleBusTours.map((tour) => {
                 const whatsappUrl = getWhatsAppBookingUrl(tour);
                 return (
-                  <div key={tour.id} className="luxury-card flex flex-col group overflow-hidden">
+                  <div key={tour.id} className="luxury-card flex flex-row sm:flex-col group overflow-hidden sm:h-auto">
                     <div
-                      className="relative aspect-[16/10] overflow-hidden bg-slate-900 cursor-pointer"
+                      className="relative w-36 sm:w-full h-full sm:aspect-[16/10] shrink-0 overflow-hidden bg-slate-900 cursor-pointer"
                       onClick={() => setSelectedTour(tour)}
                     >
                       <img
@@ -554,39 +554,40 @@ export default function App() {
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-[#0E1422] via-transparent to-black/20" />
-                      <div className="absolute top-3 left-3 bg-[#f1683a] text-white font-bold px-2.5 py-0.5 rounded text-[11px]">
+                      <div className="absolute top-2 left-2 bg-[#f1683a] text-white font-bold px-1.5 py-0.5 rounded text-[9px] sm:text-[11px]">
                         {tour.badge || 'Bus Yatra'}
                       </div>
-                      <div className="absolute top-3 right-3 bg-black/75 text-amber-300 text-[11px] px-2.5 py-1 rounded font-mono border border-amber-500/30">
-                        {tour.departureDate}
-                      </div>
-                      <div className="absolute bottom-3 left-3 text-xs text-slate-300 flex items-center gap-1.5">
-                        <Bus className="w-3.5 h-3.5 text-[#f1683a]" />
+                      <div className="absolute bottom-1.5 left-1.5 text-[9px] sm:text-xs text-slate-300 flex items-center gap-1 bg-black/70 px-1.5 py-0.5 rounded backdrop-blur-xs">
+                        <Bus className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 text-[#f1683a]" />
                         <span>{tour.busType}</span>
                       </div>
                     </div>
 
-                    <div className="p-5 sm:p-6 flex-1 flex flex-col justify-between space-y-4">
+                    <div className="p-2.5 sm:p-5 flex-1 flex flex-col justify-between space-y-2 sm:space-y-4">
                       <div>
+                        <div className="flex items-center justify-between gap-1 mb-1">
+                          <span className="text-[9px] sm:text-[11px] text-amber-300 font-mono">
+                            📅 {tour.departureDate}
+                          </span>
+                          <span className="text-[9px] sm:text-xs text-emerald-400 font-bold">
+                            {tour.availableSeats} seats left
+                          </span>
+                        </div>
                         <h3
                           onClick={() => setSelectedTour(tour)}
-                          className="font-serif text-lg font-bold text-white group-hover:text-amber-300 transition-colors cursor-pointer mb-2"
+                          className="font-serif text-xs sm:text-lg font-bold text-white group-hover:text-amber-300 transition-colors cursor-pointer line-clamp-1 leading-snug"
                         >
                           {tour.title}
                         </h3>
-                        <p className="text-slate-400 text-xs leading-relaxed line-clamp-2">
+                        <p className="hidden sm:block text-slate-400 text-xs leading-relaxed line-clamp-2 mt-1">
                           {tour.description}
                         </p>
                       </div>
 
-                      <div className="space-y-1.5 pt-2 border-t border-slate-800 text-xs text-slate-300">
+                      <div className="hidden sm:block space-y-1.5 pt-2 border-t border-slate-800 text-xs text-slate-300">
                         <div className="flex justify-between">
                           <span className="text-slate-400">Duration:</span>
                           <span className="text-white font-medium">{tour.duration}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-slate-400">Available Seats:</span>
-                          <span className="text-emerald-400 font-bold">{tour.availableSeats} of {tour.totalSeats} seats</span>
                         </div>
                         <div className="flex justify-between">
                           <span className="text-slate-400">Route:</span>
@@ -594,32 +595,32 @@ export default function App() {
                         </div>
                       </div>
 
-                      <div className="pt-3 border-t border-slate-800 flex items-center justify-between">
+                      <div className="pt-1.5 sm:pt-3 border-t border-slate-800 flex items-center justify-between">
                         <div>
-                          <span className="text-[10px] text-slate-500 block uppercase tracking-wider">Per Seat Fare</span>
-                          <div className="flex items-baseline gap-1.5">
+                          <span className="hidden sm:block text-[10px] text-slate-500 uppercase tracking-wider">Per Seat Fare</span>
+                          <div className="flex items-baseline gap-1">
                             {tour.originalPrice && tour.originalPrice > tour.price && (
-                              <span className="text-xs text-slate-500 line-through">₹{tour.originalPrice}</span>
+                              <span className="text-[10px] sm:text-xs text-slate-500 line-through">₹{tour.originalPrice}</span>
                             )}
-                            <span className="text-xl font-bold text-amber-400">₹{tour.price.toLocaleString('en-IN')}</span>
+                            <span className="text-sm sm:text-xl font-bold text-amber-400">₹{tour.price.toLocaleString('en-IN')}</span>
                           </div>
                         </div>
 
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-1.5 sm:gap-2">
                           <button
                             type="button"
                             onClick={() => setSelectedTour(tour)}
-                            className="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded text-xs font-semibold cursor-pointer"
+                            className="px-2 py-1 sm:px-3 sm:py-2 bg-slate-800 hover:bg-slate-700 text-white rounded text-[10px] sm:text-xs font-semibold cursor-pointer"
                           >
-                            Details
+                            Info
                           </button>
                           <a
                             href={whatsappUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded text-xs font-bold flex items-center gap-1"
+                            className="px-2.5 py-1 sm:px-3.5 sm:py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded text-[10px] sm:text-xs font-bold flex items-center gap-1"
                           >
-                            <MessageCircle className="w-3.5 h-3.5 fill-white" />
+                            <MessageCircle className="w-3 h-3 fill-white" />
                             <span>Book</span>
                           </a>
                         </div>
@@ -661,40 +662,40 @@ export default function App() {
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-6">
             {visibleHolidayPackages.map((pkg) => {
               const whatsappUrl = `https://wa.me/${SITE_INFO.whatsappRaw}?text=${encodeURIComponent(
                 pkg.whatsappText || `Namaste Mannat Travels, mujhe ${pkg.title} package book karna hai.`
               )}`;
               return (
-                <div key={pkg.id} className="luxury-card flex flex-col justify-between p-5 space-y-4">
-                  <div className="space-y-3">
+                <div key={pkg.id} className="luxury-card flex flex-col justify-between p-3.5 sm:p-5 space-y-2.5 sm:space-y-4">
+                  <div className="space-y-1.5 sm:space-y-3">
                     <div className="flex items-center justify-between text-xs">
-                      <span className="text-amber-400 font-bold px-2 py-0.5 rounded bg-amber-500/10 border border-amber-500/30">
+                      <span className="text-amber-400 font-bold px-1.5 py-0.5 rounded bg-amber-500/10 border border-amber-500/30 text-[10px] sm:text-xs">
                         {pkg.badge || pkg.category}
                       </span>
-                      <span className="text-slate-400 font-mono text-[11px]">{pkg.duration}</span>
+                      <span className="text-slate-400 font-mono text-[10px] sm:text-[11px]">{pkg.duration}</span>
                     </div>
 
-                    <h3 className="font-serif text-base font-bold text-white leading-snug">
+                    <h3 className="font-serif text-sm sm:text-base font-bold text-white leading-snug line-clamp-1">
                       {pkg.title}
                     </h3>
 
-                    <p className="text-xs text-slate-400 line-clamp-3">
+                    <p className="hidden sm:block text-xs text-slate-400 line-clamp-2">
                       {pkg.description}
                     </p>
 
-                    <div className="p-2.5 rounded-lg bg-slate-900 text-[11px] text-slate-300 space-y-1">
+                    <div className="p-1.5 sm:p-2.5 rounded-lg bg-slate-900 text-[10px] sm:text-[11px] text-slate-300 space-y-0.5 sm:space-y-1">
                       <div className="truncate"><strong className="text-slate-400">Route:</strong> {pkg.route}</div>
                       <div><strong className="text-slate-400">Vehicle:</strong> {pkg.vehicle}</div>
                     </div>
                   </div>
 
-                  <div className="pt-3 border-t border-slate-800 flex items-center justify-between">
+                  <div className="pt-2 sm:pt-3 border-t border-slate-800 flex items-center justify-between">
                     <div>
-                      <span className="text-[10px] text-slate-500 block">Package Rate</span>
-                      <div className="text-base font-bold text-amber-400">
-                        ₹{pkg.price.toLocaleString('en-IN')} <span className="text-[10px] text-slate-400 font-normal">/ person</span>
+                      <span className="hidden sm:block text-[10px] text-slate-500">Package Rate</span>
+                      <div className="text-sm sm:text-base font-bold text-amber-400">
+                        ₹{pkg.price.toLocaleString('en-IN')} <span className="text-[9px] sm:text-[10px] text-slate-400 font-normal">/ person</span>
                       </div>
                     </div>
 
@@ -702,10 +703,10 @@ export default function App() {
                       href={whatsappUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="px-3 py-1.5 bg-[#f1683a] hover:bg-[#d95325] text-white font-bold text-xs rounded transition flex items-center gap-1"
+                      className="px-2.5 py-1 sm:px-3 sm:py-1.5 bg-[#f1683a] hover:bg-[#d95325] text-white font-bold text-[11px] sm:text-xs rounded transition flex items-center gap-1 active:scale-95"
                     >
                       <span>Inquire</span>
-                      <ArrowRight className="w-3.5 h-3.5" />
+                      <ArrowRight className="w-3 h-3" />
                     </a>
                   </div>
                 </div>
