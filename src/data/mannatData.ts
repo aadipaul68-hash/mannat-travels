@@ -25,6 +25,9 @@ export interface TourItem {
   inclusions?: string[];
   placesCovered?: string[];
   image: string;
+  galleryImages?: string[];
+  videoUrl?: string; // YouTube or MP4 video link
+  itinerary?: { day: number; title: string; desc: string }[];
   status?: string;
   badge?: string;
   closingSoon?: boolean;
@@ -72,10 +75,21 @@ export const BUS_TOURS: TourItem[] = [
       'Darshan & Tour Manager Assistance'
     ],
     image: '/images/kaichi-dham.jpg',
+    galleryImages: [
+      '/images/kaichi-dham.jpg',
+      '/images/nainital.jpg',
+      '/images/haridwar.jpg'
+    ],
+    videoUrl: 'https://www.youtube.com/watch?v=0hE1rDcf7iI',
     status: 'active',
     badge: 'Bestseller',
     closingSoon: false,
-    description: 'Sacred group bus pilgrimage to revered Neem Karoli Baba Kainchi Dham Ashram, ancient Maa Girija Devi Temple on Kosi riverbank, and Hanuman Dham.',
+    description: 'Sacred group bus pilgrimage to revered Neem Karoli Baba Kainchi Dham Ashram, ancient Maa Girija Devi Temple on Kosi riverbank, and Hanuman Dham with complete satvik meals and comfortable hotel stay.',
+    itinerary: [
+      { day: 1, title: 'Departure & Girija Devi Temple', desc: 'Departure from Muzaffarnagar / Meerut in 2x2 AC Pushback Coach. Scenic arrival at Ramnagar, holy darshan of Maa Girija Devi Temple on Kosi river and evening hotel check-in.' },
+      { day: 2, title: 'Kainchi Dham Ashram Darshan & Aarti', desc: 'Early morning arrival at Neem Karoli Baba Ashram Kainchi Dham. Participate in Kakad Aarti, Hanuman Chalisa recitations, receive prasad, and visit Hanuman Dham.' },
+      { day: 3, title: 'Bhimtal Sightseeing & Return Journey', desc: 'Morning visit to picturesque Bhimtal Lake, scenic mountain views, local shopping, followed by comfortable return journey to Muzaffarnagar / Delhi NCR.' }
+    ],
     whatsappText: 'Namaste Mannat Tours, mujhe Girija Devi + Kainchi Dham Bus Tour (21 Sept, ₹2,300) ki seat book karni hai.'
   },
   {
@@ -104,9 +118,22 @@ export const BUS_TOURS: TourItem[] = [
       'Ram Mandir Darshan Assistance'
     ],
     image: '/images/ayodhya-banner.jpg',
+    galleryImages: [
+      '/images/ayodhya-banner.jpg',
+      '/images/vrindavan.jpg',
+      '/images/haridwar.jpg'
+    ],
+    videoUrl: 'https://www.youtube.com/watch?v=F0Z7mYmE1gY',
     status: 'active',
     badge: 'Most Popular',
-    description: 'Grand group yatra to Bhavya Ram Janmabhoomi Mandir at Ayodhya Dham, Saryu holy bath, and Kashi Vishwanath corridor with Ganga Aarti.',
+    description: 'Grand group yatra to Bhavya Ram Janmabhoomi Mandir at Ayodhya Dham, Saryu holy bath, Kanak Bhawan, Hanuman Garhi, and Kashi Vishwanath corridor with spectacular evening Dashashwamedh Ghat Ganga Aarti.',
+    itinerary: [
+      { day: 1, title: 'Departure from Muzaffarnagar & Meerut', desc: 'Overnight journey via express highway in AC Tourist Coach with bhajans and devotional ambiance.' },
+      { day: 2, title: 'Ayodhya Ram Janmabhoomi & Saryu Aarti', desc: 'Holy dip in sacred Saryu river, VIP darshan at Bhavya Ram Mandir, Hanuman Garhi, and Kanak Bhawan.' },
+      { day: 3, title: 'Travel to Kashi & Ganga Aarti', desc: 'Proceed to Varanasi, check-in to hotel, attend divine evening Ganga Aarti by private boat on Dashashwamedh Ghat.' },
+      { day: 4, title: 'Kashi Vishwanath Jyotirlinga & Sarnath', desc: 'Mangala darshan at Kashi Vishwanath Corridor, Annapurna Mandir, Kaal Bhairav, and excursion to Sarnath.' },
+      { day: 5, title: 'Return Journey Home', desc: 'Depart with sacred prasad and blessings, safe drop-off at Meerut and Muzaffarnagar.' }
+    ],
     whatsappText: 'Namaste Mannat Tours, mujhe Ayodhya Ram Mandir & Kashi Bus Tour (05 Oct, ₹5,999) ki booking karni hai.'
   },
   {
@@ -377,9 +404,9 @@ export const POPULAR_TOURS_DEFAULT: TourItem[] = [
     totalSeats: 25,
     boardingLocation: 'Muzaffarnagar, Meerut & Delhi NCR',
     badge: 'Signature Tour',
-    description: 'Snow-clad Rohtang Pass, Solang Valley adventures, Mall Road walks, pine forest tranquility, and luxury hillside hotel stays.',
+    description: 'Snow-clad Rohtang Pass, Solang Valley adventures, Mall Road walks, pine forest tranquility, and luxury hillside hotel stays with private vehicle and guided excursions.',
     route: 'Muzaffarnagar - Chandigarh - Shimla - Kullu - Manali - Solang Valley',
-    placesCovered: ['Shimla Mall Road', 'Kufri Snow View', 'Solang Valley', 'Hadimba Temple', 'Kullu River Rafting'],
+    placesCovered: ['Shimla Mall Road', 'Kufri Snow View', 'Solang Valley', 'Hadimba Temple', 'Kullu River Rafting', 'Atal Tunnel'],
     inclusions: [
       'AC Coach / Private Sedan Transport with Experienced Hill Driver',
       'Handpicked 3-Star / 4-Star Resort Stays with Valley Views',
@@ -387,6 +414,66 @@ export const POPULAR_TOURS_DEFAULT: TourItem[] = [
       'Full Sightseeing Transfers & State Road Permits Included'
     ],
     image: '/images/manali.jpg',
+    galleryImages: [
+      '/images/manali.jpg',
+      '/images/shimla.jpg',
+      '/images/mussoorie.jpg'
+    ],
+    videoUrl: 'https://www.youtube.com/watch?v=F0Z7mYmE1gY',
+    itinerary: [
+      { day: 1, title: 'Drive to Shimla via Pinjore', desc: 'Pickup from Muzaffarnagar/Delhi, scenic drive into the Shivalik hills, hotel check-in at Shimla and evening leisure on Ridge.' },
+      { day: 2, title: 'Shimla, Kufri & Jakhoo Temple', desc: 'Excursion to Kufri snow viewpoint, horse riding, Jakhoo Hanuman Temple cable car, and historic Mall Road.' },
+      { day: 3, title: 'Scenic Drive to Manali via Kullu', desc: 'Picturesque mountain drive along Beas River, visit Pandoh Dam, Hanogi Mata Temple, and Kullu shawl weaving centers.' },
+      { day: 4, title: 'Solang Valley Snow Adventures & Atal Tunnel', desc: 'Snow activities at Solang Valley (skiing, zorbing, paragliding), passage through engineering marvel Atal Tunnel.' },
+      { day: 5, title: 'Local Manali Sightseeing & Hot Springs', desc: 'Visit ancient wooden Hadimba Temple, Manu Temple, Tibetan Monastery, and natural sulfur hot springs at Vashisht.' },
+      { day: 6, title: 'Kullu Rafting & Return Journey', desc: 'White water river rafting in Kullu followed by comfortable return journey home.' }
+    ],
+    status: 'active'
+  },
+  {
+    id: 'tour-chardham-divine',
+    title: 'Divya Char Dham Yatra (Kedarnath & Badrinath)',
+    category: 'Spiritual Tours',
+    destination: 'Uttarakhand Devbhoomi (Four Shrines)',
+    duration: '9 Nights / 10 Days',
+    departureDate: 'Upcoming Pilgrim Batch',
+    price: 24999,
+    originalPrice: 28999,
+    advanceAmount: 5000,
+    availableSeats: 4,
+    totalSeats: 25,
+    boardingLocation: 'Muzaffarnagar, Haridwar & Delhi NCR',
+    badge: 'Devotional Supreme',
+    description: 'Sacred life-changing pilgrimage to Kedarnath, Badrinath, Gangotri & Yamunotri with pure satvik meals, medical assistance, experienced pandits, and comfortable stays.',
+    route: 'Haridwar - Barkot - Yamunotri - Uttarkashi - Gangotri - Guptkashi - Kedarnath - Badrinath - Rishikesh',
+    placesCovered: ['Yamunotri Dham', 'Gangotri Shrine', 'Shri Kedarnath Jyotirlinga', 'Badrinath Dham', 'Devprayag Sangam', 'Mana Village'],
+    inclusions: [
+      'Deluxe 2x2 AC Tourist Coach / Pushback Traveller',
+      '9 Nights Hotel & Dharmshala Accommodation',
+      'Pure Satvik Vegetarian Meals (Breakfast & Dinner)',
+      'Biometric Yatra Registration & VIP Darshan Assistance',
+      'Medical Kit & 24/7 Experienced Yatra Escort'
+    ],
+    image: '/images/chardham.jpg',
+    galleryImages: [
+      '/images/chardham.jpg',
+      '/images/badrinath.jpg',
+      '/images/haridwar.jpg',
+      '/images/rishikesh.jpg'
+    ],
+    videoUrl: 'https://www.youtube.com/watch?v=kYvM-cQ0dGg',
+    itinerary: [
+      { day: 1, title: 'Haridwar to Barkot', desc: 'Scenic drive along Yamuna riverbanks, check-in to Barkot mountain camp/hotel.' },
+      { day: 2, title: 'Barkot to Yamunotri Dham Darshan', desc: 'Trek to holy Yamunotri temple, holy bath in Surya Kund hot springs, return to Barkot.' },
+      { day: 3, title: 'Barkot to Uttarkashi', desc: 'Drive through apple orchards to Uttarkashi, evening darshan at ancient Kashi Vishwanath Temple.' },
+      { day: 4, title: 'Uttarkashi to Gangotri Dham & Return', desc: 'Drive along Bhagirathi gorge to Gangotri shrine, holy dip in sacred Ganga and pooja.' },
+      { day: 5, title: 'Uttarkashi to Guptkashi / Sitapur', desc: 'Drive via Mandakini valley with views of snowy Himalayan ranges.' },
+      { day: 6, title: 'Sitapur to Shri Kedarnath Dham', desc: 'Helicopter / trek to holy Kedarnath Jyotirlinga, evening divine Aarti and overnight mountain stay.' },
+      { day: 7, title: 'Kedarnath to Guptkashi / Pipalkoti', desc: 'Early morning Abhishek, descent to base and drive towards Badrinath route.' },
+      { day: 8, title: 'Drive to Badrinath Dham', desc: 'Holy dip in Tapt Kund, darshan of Lord Badri Vishal, visit Mana Village, Vyas Gufa, and Bhim Pul.' },
+      { day: 9, title: 'Badrinath to Rudraprayag / Srinagar', desc: 'Witness Panch Prayag confluences (Vishnuprayag, Nandaprayag, Karnaprayag).' },
+      { day: 10, title: 'Rishikesh Ganga Aarti & Return', desc: 'Visit Devprayag Sangam, Ram Jhula Rishikesh, and safe return to Haridwar/Muzaffarnagar.' }
+    ],
     status: 'active'
   },
   {

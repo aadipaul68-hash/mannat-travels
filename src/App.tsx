@@ -16,12 +16,14 @@ import {
   Lock,
   Sun,
   Moon,
+  User,
 } from 'lucide-react';
 import { AdiyogiHeroSlider } from './components/AdiyogiHeroSlider';
 import { AdiyogiPopupModal } from './components/AdiyogiPopupModal';
 import { AdiyogiContactSection } from './components/AdiyogiContactSection';
 import { TourDetailModal } from './components/TourDetailModal';
 import { AdminPanelModal } from './components/AdminPanelModal';
+import { CustomerAuthModal } from './components/CustomerAuthModal';
 import { CustomerReviewsSection } from './components/CustomerReviewsSection';
 import {
   SITE_INFO,
@@ -71,6 +73,7 @@ export default function App() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isQuotePopupOpen, setIsQuotePopupOpen] = useState(false);
   const [isAdminModalOpen, setIsAdminModalOpen] = useState(false);
+  const [isCustomerAuthOpen, setIsCustomerAuthOpen] = useState(false);
 
   // Theme Mode: Dark (default luxury black/gold) or Light (clean ivory/warm amber)
   const [theme, setTheme] = useState<'dark' | 'light'>(() => {
@@ -205,6 +208,16 @@ export default function App() {
               )}
             </button>
 
+            {/* Customer Login Button (ग्राहक लॉगिन) */}
+            <button
+              onClick={() => setIsCustomerAuthOpen(true)}
+              title="Customer Login / Member Account"
+              className="px-3 py-2 rounded-lg border border-amber-400/40 bg-slate-900/90 hover:bg-slate-800 text-amber-300 text-xs font-bold uppercase tracking-wider transition flex items-center gap-1.5 cursor-pointer shadow-sm"
+            >
+              <User className="w-3.5 h-3.5 text-amber-400" />
+              <span>Login / Account</span>
+            </button>
+
             {/* Admin Panel Trigger (PIN Protected) */}
             <button
               onClick={() => setIsAdminModalOpen(true)}
@@ -248,6 +261,14 @@ export default function App() {
               aria-label="Toggle Theme"
             >
               {theme === 'dark' ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-indigo-600" />}
+            </button>
+            <button
+              onClick={() => setIsCustomerAuthOpen(true)}
+              className="p-2 text-amber-300 bg-slate-900/90 border border-amber-400/40 rounded-lg text-xs font-bold"
+              aria-label="Customer Login"
+              title="Customer Login"
+            >
+              <User className="w-4 h-4 text-amber-400" />
             </button>
             <button
               onClick={() => setIsAdminModalOpen(true)}
@@ -346,6 +367,17 @@ export default function App() {
               >
                 {theme === 'dark' ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-indigo-600" />}
                 <span>Switch to {theme === 'dark' ? 'Light Theme' : 'Dark Theme'}</span>
+              </button>
+
+              <button
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  setIsCustomerAuthOpen(true);
+                }}
+                className="w-full py-3 bg-gradient-to-r from-amber-500 to-[#f1683a] text-slate-950 font-bold rounded-lg uppercase tracking-wider text-xs flex items-center justify-center gap-2 cursor-pointer shadow-md"
+              >
+                <User className="w-4 h-4" />
+                <span>Customer Login / Account (ग्राहक लॉगिन)</span>
               </button>
 
               <button
@@ -1024,6 +1056,12 @@ export default function App() {
       <AdiyogiPopupModal
         isOpen={isQuotePopupOpen}
         onClose={() => setIsQuotePopupOpen(false)}
+      />
+
+      {/* ✦ CUSTOMER LOGIN & MEMBER AUTH MODAL (Google & Email/Password) ✦ */}
+      <CustomerAuthModal
+        isOpen={isCustomerAuthOpen}
+        onClose={() => setIsCustomerAuthOpen(false)}
       />
 
       {/* ✦ ADMIN PANEL MODAL (Add, Edit, Delete, Hide/Unhide) ✦ */}

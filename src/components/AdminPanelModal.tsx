@@ -812,13 +812,26 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
 
                     <div>
                       <label className="block text-slate-300 font-semibold mb-1">
+                        Video Tour Link (यूट्यूब वीडियो लिंक)
+                      </label>
+                      <input
+                        type="text"
+                        value={formData.videoUrl || ''}
+                        onChange={(e) => setFormData({ ...formData, videoUrl: e.target.value })}
+                        placeholder="e.g. https://www.youtube.com/watch?v=F0Z7mYmE1gY or youtu.be/..."
+                        className="w-full px-3 py-2 rounded bg-slate-950 border border-slate-700 text-white focus:outline-none focus:border-[#f1683a]"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-slate-300 font-semibold mb-1">
                         Description & Inclusions
                       </label>
                       <textarea
                         rows={3}
                         value={formData.description || ''}
                         onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                        placeholder="Short overview of the tour package..."
+                        placeholder="Detailed overview of the tour package, special highlights..."
                         className="w-full px-3 py-2 rounded bg-slate-950 border border-slate-700 text-white focus:outline-none focus:border-[#f1683a]"
                       />
                     </div>
