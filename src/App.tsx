@@ -132,8 +132,8 @@ export default function App() {
   return (
     <div className={`min-h-screen flex flex-col font-sans selection:bg-[#f1683a] selection:text-white transition-colors duration-300 ${theme === 'light' ? 'light-theme bg-[#F8FAFC] text-slate-800' : 'bg-[#080B11] text-slate-100'}`}>
       
-      {/* ✦ Header Glass ✦ */}
-      <header className="header-glass fixed top-0 left-0 w-full z-50 transition-all duration-300">
+      {/* ✦ Header Glass (Scrolls up naturally with page) ✦ */}
+      <header className="header-glass absolute top-0 left-0 w-full z-50 transition-all duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 sm:h-24 flex items-center justify-between">
           
           {/* Brand Logo */}
