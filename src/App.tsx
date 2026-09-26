@@ -380,17 +380,17 @@ export default function App() {
       <AdiyogiHeroSlider onOpenQuoteModal={() => setIsQuotePopupOpen(true)} />
 
       {/* ✦ Popular Tours Section ✦ */}
-      <section id="popular-tours" className="py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-16">
+      <section id="popular-tours" className="py-12 sm:py-20 px-3 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 sm:gap-6 mb-8 sm:mb-14">
           <div>
-            <span className="text-xs uppercase tracking-[0.3em] text-amber-400 font-semibold block mb-2">
+            <span className="text-[10px] sm:text-xs uppercase tracking-[0.25em] text-amber-400 font-semibold block mb-1.5">
               Curated Journeys
             </span>
-            <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl font-bold text-white tracking-tight">
+            <h2 className="font-serif text-2xl sm:text-4xl md:text-5xl font-bold text-white tracking-tight">
               Popular Tours
             </h2>
-            <div className="w-16 h-0.5 bg-amber-500 mt-4 mb-4" />
-            <p className="text-slate-400 text-sm sm:text-base max-w-2xl leading-relaxed">
+            <div className="w-12 sm:w-16 h-0.5 bg-amber-500 mt-2.5 mb-3" />
+            <p className="text-slate-400 text-xs sm:text-base max-w-2xl leading-relaxed">
               Experience hand-picked holiday itineraries and divine pilgrimages across the snow peaks of Himachal and the tranquil valleys of Uttarakhand.
             </p>
           </div>
@@ -511,18 +511,18 @@ export default function App() {
       </section>
 
       {/* ✦ Dedicated Bus Tours & Yatras Section ✦ */}
-      <section id="bus-tours-section" className="py-24 bg-[#0B101A] border-t border-slate-900">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-16">
+      <section id="bus-tours-section" className="py-12 sm:py-20 bg-[#0B101A] border-t border-slate-900">
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 sm:gap-6 mb-8 sm:mb-14">
             <div>
-              <span className="text-xs uppercase tracking-[0.3em] text-[#f1683a] font-semibold block mb-2">
+              <span className="text-[10px] sm:text-xs uppercase tracking-[0.25em] text-[#f1683a] font-semibold block mb-1.5">
                 Deluxe 2x2 AC Bus Pilgrimages
               </span>
-              <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl font-bold text-white tracking-tight">
+              <h2 className="font-serif text-2xl sm:text-4xl md:text-5xl font-bold text-white tracking-tight">
                 Upcoming Spiritual Bus Tours
               </h2>
-              <div className="w-16 h-0.5 bg-[#f1683a] mt-4 mb-4" />
-              <p className="text-slate-400 text-sm sm:text-base max-w-2xl">
+              <div className="w-12 sm:w-16 h-0.5 bg-[#f1683a] mt-2.5 mb-3" />
+              <p className="text-slate-400 text-xs sm:text-base max-w-2xl">
                 Departing regularly from Muzaffarnagar (Central Bus Stand), Meerut Bypass, and Delhi NCR with pure satvik food and experienced yatra managers.
               </p>
             </div>
@@ -634,17 +634,17 @@ export default function App() {
       </section>
 
       {/* ✦ Holiday Packages Section ✦ */}
-      <section id="packages-section" className="py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-16">
+      <section id="packages-section" className="py-12 sm:py-20 px-3 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 sm:gap-6 mb-8 sm:mb-14">
           <div>
-            <span className="text-xs uppercase tracking-[0.3em] text-[#f1683a] font-semibold block mb-2">
+            <span className="text-[10px] sm:text-xs uppercase tracking-[0.25em] text-[#f1683a] font-semibold block mb-1.5">
               Tailor-Made Vacations
             </span>
-            <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl font-bold text-white tracking-tight">
+            <h2 className="font-serif text-2xl sm:text-4xl md:text-5xl font-bold text-white tracking-tight">
               Holiday Packages & Custom Tours
             </h2>
-            <div className="w-16 h-0.5 bg-[#f1683a] mt-4 mb-4" />
-            <p className="text-slate-400 text-sm sm:text-base max-w-2xl leading-relaxed">
+            <div className="w-12 sm:w-16 h-0.5 bg-[#f1683a] mt-2.5 mb-3" />
+            <p className="text-slate-400 text-xs sm:text-base max-w-2xl leading-relaxed">
               From Kainchi Dham & Nainital to Kashmir Houseboats, Manali snow adventures, and Goa beach holidays.
             </p>
           </div>
