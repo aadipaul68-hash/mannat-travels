@@ -22,7 +22,7 @@ import {
 import { AdiyogiHeroSlider } from './components/AdiyogiHeroSlider';
 import { AdiyogiPopupModal } from './components/AdiyogiPopupModal';
 import { AdiyogiContactSection } from './components/AdiyogiContactSection';
-import { TourDetailModal } from './components/TourDetailModal';
+import { TourDetailPage } from './components/TourDetailPage';
 import { AdminPanelModal } from './components/AdminPanelModal';
 import { CustomerAuthModal } from './components/CustomerAuthModal';
 import { CustomerReviewsSection } from './components/CustomerReviewsSection';
@@ -148,6 +148,49 @@ export default function App() {
     return () => clearTimeout(timer);
   }, []);
 
+  // Sync URL query with selectedTour for true full-page routing (Holidify.com style)
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const tourSlug = params.get('package');
+    if (tourSlug) {
+      const all = [...popularTours, ...busTours, ...holidayPackages];
+      const found = all.find((t) => t.id === tourSlug);
+      if (found) {
+        setSelectedTour(found);
+      }
+    }
+
+    const handlePopState = () => {
+      const p = new URLSearchParams(window.location.search);
+      const slug = p.get('package');
+      if (slug) {
+        const all = [...popularTours, ...busTours, ...holidayPackages];
+        const found = all.find((t) => t.id === slug);
+        if (found) setSelectedTour(found);
+      } else {
+        setSelectedTour(null);
+      }
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, [popularTours, busTours, holidayPackages]);
+
+  const handleOpenTour = (tour: TourItem) => {
+    setSelectedTour(tour);
+    try {
+      window.history.pushState({ tourId: tour.id }, '', `?package=${encodeURIComponent(tour.id)}`);
+    } catch {}
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleCloseTour = () => {
+    setSelectedTour(null);
+    try {
+      window.history.pushState({}, '', window.location.pathname);
+    } catch {}
+  };
+
   const handleResetToDefaults = () => {
     if (window.confirm('Reset all packages back to initial default list?')) {
       setPopularTours(POPULAR_TOURS_DEFAULT);
@@ -163,6 +206,50 @@ export default function App() {
   const visiblePopularTours = popularTours.filter((t) => t.status !== 'hidden');
   const visibleBusTours = busTours.filter((t) => t.status !== 'hidden');
   const visibleHolidayPackages = holidayPackages.filter((t) => t.status !== 'hidden');
+
+  // ✦ HOLIDIFY-STYLE FULL PAGE VIEW (No Popup, Complete Dedicated Webpage) ✦
+  if (selectedTour) {
+    return (
+      <div className={`min-h-screen w-full transition-colors duration-300 ${theme === 'light' ? 'light-theme bg-[#F8FAFC] text-slate-800' : 'bg-[#080B11] text-slate-100'}`}>
+        <TourDetailPage
+          tour={selectedTour}
+          theme={theme}
+          allTours={[...visiblePopularTours, ...visibleBusTours, ...visibleHolidayPackages]}
+          onSelectTour={handleOpenTour}
+          onBack={handleCloseTour}
+          onOpenQuote={() => setIsQuotePopupOpen(true)}
+          onOpenCustomerAuth={() => setIsCustomerAuthOpen(true)}
+          onOpenAdmin={() => setIsAdminModalOpen(true)}
+          onToggleTheme={toggleTheme}
+        />
+
+        {/* Adiyogi Free Quote Popup */}
+        <AdiyogiPopupModal
+          isOpen={isQuotePopupOpen}
+          onClose={() => setIsQuotePopupOpen(false)}
+        />
+
+        {/* Customer Login Modal */}
+        <CustomerAuthModal
+          isOpen={isCustomerAuthOpen}
+          onClose={() => setIsCustomerAuthOpen(false)}
+        />
+
+        {/* Admin Panel Modal */}
+        <AdminPanelModal
+          isOpen={isAdminModalOpen}
+          onClose={() => setIsAdminModalOpen(false)}
+          popularTours={popularTours}
+          setPopularTours={setPopularTours}
+          busTours={busTours}
+          setBusTours={setBusTours}
+          holidayPackages={holidayPackages}
+          setHolidayPackages={setHolidayPackages}
+          onResetToDefaults={handleResetToDefaults}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className={`min-h-screen w-full max-w-[100vw] overflow-x-clip flex flex-col font-sans selection:bg-[#f1683a] selection:text-white transition-colors duration-300 ${theme === 'light' ? 'light-theme bg-[#F8FAFC] text-slate-800' : 'bg-[#080B11] text-slate-100'}`}>
@@ -359,7 +446,7 @@ export default function App() {
                   {/* Image Banner: half height / compact on mobile */}
                   <div
                     className="relative w-36 sm:w-full h-full sm:aspect-[4/3] shrink-0 overflow-hidden bg-slate-900 cursor-pointer"
-                    onClick={() => setSelectedTour(tour)}
+                    onClick={() => handleOpenTour(tour)}
                   >
                     <img
                       src={tour.image}
@@ -386,7 +473,7 @@ export default function App() {
                   <div className="p-2.5 sm:p-5 flex-1 flex flex-col justify-between overflow-hidden">
                     <div>
                       <h3
-                        onClick={() => setSelectedTour(tour)}
+                        onClick={() => handleOpenTour(tour)}
                         className="font-serif text-xs sm:text-base font-bold text-white group-hover:text-amber-300 transition-colors mb-0.5 sm:mb-2 cursor-pointer line-clamp-1 sm:line-clamp-2 leading-snug"
                       >
                         {tour.title}
@@ -425,7 +512,7 @@ export default function App() {
                       <div className="grid grid-cols-2 gap-1.5">
                         <button
                           type="button"
-                          onClick={() => setSelectedTour(tour)}
+                          onClick={() => handleOpenTour(tour)}
                           className="inline-flex items-center justify-center gap-1 px-2 py-1 sm:py-2 rounded text-[10px] sm:text-xs font-semibold uppercase tracking-wider bg-slate-800/90 hover:bg-amber-500 hover:text-slate-950 text-white transition-all cursor-pointer active:scale-95"
                         >
                           <Eye className="w-3 h-3" />
@@ -492,7 +579,7 @@ export default function App() {
                   <div key={tour.id} className="luxury-card flex flex-row sm:flex-col group overflow-hidden sm:h-auto">
                     <div
                       className="relative w-36 sm:w-full h-full sm:aspect-[16/10] shrink-0 overflow-hidden bg-slate-900 cursor-pointer"
-                      onClick={() => setSelectedTour(tour)}
+                      onClick={() => handleOpenTour(tour)}
                     >
                       <img
                         src={tour.image}
@@ -526,7 +613,7 @@ export default function App() {
                           </span>
                         </div>
                         <h3
-                          onClick={() => setSelectedTour(tour)}
+                          onClick={() => handleOpenTour(tour)}
                           className="font-serif text-xs sm:text-lg font-bold text-white group-hover:text-amber-300 transition-colors cursor-pointer line-clamp-1 leading-snug"
                         >
                           {tour.title}
@@ -561,7 +648,7 @@ export default function App() {
                         <div className="flex items-center gap-1.5 sm:gap-2">
                           <button
                             type="button"
-                            onClick={() => setSelectedTour(tour)}
+                            onClick={() => handleOpenTour(tour)}
                             className="px-2 py-1 sm:px-3 sm:py-2 bg-slate-800 hover:bg-slate-700 text-white rounded text-[10px] sm:text-xs font-semibold cursor-pointer"
                           >
                             Info
@@ -624,7 +711,7 @@ export default function App() {
                   {/* Destination Image Banner */}
                   <div
                     className="relative w-36 sm:w-full h-full sm:aspect-[16/10] shrink-0 overflow-hidden bg-slate-900 cursor-pointer"
-                    onClick={() => setSelectedTour(pkg)}
+                    onClick={() => handleOpenTour(pkg)}
                   >
                     <img
                       src={pkg.image}
@@ -650,7 +737,7 @@ export default function App() {
                   <div className="p-2.5 sm:p-5 flex-1 flex flex-col justify-between space-y-2 sm:space-y-4">
                     <div>
                       <h3
-                        onClick={() => setSelectedTour(pkg)}
+                        onClick={() => handleOpenTour(pkg)}
                         className="font-serif text-xs sm:text-base font-bold text-white group-hover:text-amber-300 transition-colors cursor-pointer line-clamp-1 leading-snug"
                       >
                         {pkg.title}
@@ -674,7 +761,7 @@ export default function App() {
                       <div className="flex items-center gap-1.5 sm:gap-2">
                         <button
                           type="button"
-                          onClick={() => setSelectedTour(pkg)}
+                          onClick={() => handleOpenTour(pkg)}
                           className="px-2 py-1 sm:px-3 sm:py-1.5 bg-slate-800 hover:bg-slate-700 text-white rounded text-[10px] sm:text-xs font-semibold cursor-pointer"
                         >
                           Info
@@ -999,16 +1086,6 @@ export default function App() {
         </button>
       </div>
 
-      {/* ✦ Tour Details Modal ✦ */}
-      <TourDetailModal
-        tour={selectedTour}
-        theme={theme}
-        allTours={[...visiblePopularTours, ...visibleBusTours, ...visibleHolidayPackages]}
-        onSelectTour={(newTour) => setSelectedTour(newTour)}
-        onClose={() => setSelectedTour(null)}
-        onOpenQuote={() => setIsQuotePopupOpen(true)}
-      />
-
       {/* ✦ EXACT ADIYOGI POPUP MODAL ("Get free quotes from us !") ✦ */}
       <AdiyogiPopupModal
         isOpen={isQuotePopupOpen}
@@ -1041,7 +1118,7 @@ export default function App() {
         allTours={[...visiblePopularTours, ...visibleBusTours, ...visibleHolidayPackages]}
         onClose={() => setIsSearchModalOpen(false)}
         onSelectTour={(tour) => {
-          setSelectedTour(tour);
+          handleOpenTour(tour);
           setIsSearchModalOpen(false);
         }}
       />
