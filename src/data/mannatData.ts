@@ -161,6 +161,11 @@ export const BUS_TOURS: TourItem[] = [
       'Yatra RFID Slip Support'
     ],
     image: '/images/vaishno-devi.jpg',
+    galleryImages: [
+      '/images/vaishno-devi.jpg',
+      '/images/haridwar.jpg',
+      '/images/rishikesh.jpg'
+    ],
     status: 'active',
     badge: 'Navratri Special',
     description: 'Blessed pilgrimage to Mata Vaishno Devi Shrine at Trikuta Hills with an AC bus excursion to holy natural Shivling cave at Shiv Khori.',
@@ -189,6 +194,11 @@ export const BUS_TOURS: TourItem[] = [
       'All Sightseeing Transfers'
     ],
     image: '/images/haridwar.jpg',
+    galleryImages: [
+      '/images/haridwar.jpg',
+      '/images/rishikesh.jpg',
+      '/images/mussoorie.jpg'
+    ],
     status: 'active',
     badge: 'Weekend Special',
     description: 'Holy dip at Har Ki Pauri, magical Triveni Ghat evening Ganga Aarti, Lakshman Jhula, and Kempty Falls in the hills of Mussoorie.',
@@ -217,6 +227,11 @@ export const BUS_TOURS: TourItem[] = [
       'Prem Mandir & Bankey Bihari Darshan Support'
     ],
     image: '/images/vrindavan.jpg',
+    galleryImages: [
+      '/images/vrindavan.jpg',
+      '/images/ayodhya-banner.jpg',
+      '/images/haridwar.jpg'
+    ],
     status: 'active',
     badge: 'Devotional',
     description: 'Immerse in Krishna bhakti: Shri Krishna Janmabhoomi, Bankey Bihari Ji, breathtaking musical fountains & lights at Prem Mandir, and Radha Rani Temple Barsana.',

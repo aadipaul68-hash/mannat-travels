@@ -33,6 +33,7 @@ export const TourDetailModal: React.FC<TourDetailModalProps> = ({ tour, onClose,
   const [tierPlan, setTierPlan] = useState<'budget' | 'mid-range' | 'premium'>('budget');
   const [openItineraryIndex, setOpenItineraryIndex] = useState<number | null>(0); // First day open by default
   const [showShareToast, setShowShareToast] = useState(false);
+  const touchStartXRef = useRef<number | null>(null);
 
   // Section anchor refs for smooth tab scrolling inside the modal
   const contentContainerRef = useRef<HTMLDivElement>(null);
@@ -46,6 +47,26 @@ export const TourDetailModal: React.FC<TourDetailModalProps> = ({ tour, onClose,
       ? tour.galleryImages
       : [tour.image, '/images/kaichi-dham.jpg', '/images/ayodhya-banner.jpg']
     : [];
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartXRef.current = e.touches[0].clientX;
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartXRef.current === null) return;
+    const touchEndX = e.changedTouches[0].clientX;
+    const diff = touchStartXRef.current - touchEndX;
+    if (Math.abs(diff) > 40) {
+      if (diff > 0) {
+        // Swiped left -> next image
+        handleNextImage();
+      } else {
+        // Swiped right -> prev image
+        handlePrevImage();
+      }
+    }
+    touchStartXRef.current = null;
+  };
 
   useEffect(() => {
     if (!tour) return;
@@ -240,46 +261,70 @@ export const TourDetailModal: React.FC<TourDetailModalProps> = ({ tour, onClose,
         {/* ✦ 3. SCROLLABLE BODY CONTENT (Holidify Exact Visual Hierarchy) ✦ */}
         <div ref={contentContainerRef} className="overflow-y-auto flex-1 divide-y divide-slate-100">
           
-          {/* Top Big Hero Image with Left & Right Arrow Scrollers */}
-          <div className="relative aspect-[16/10] sm:aspect-[16/8] bg-slate-900 w-full overflow-hidden select-none">
+          {/* Top Big Hero Image with Left & Right Arrow Scrollers (Holidify Exact Look) */}
+          <div
+            onTouchStart={handleTouchStart}
+            onTouchEnd={handleTouchEnd}
+            className="relative aspect-[4/3] sm:aspect-[16/9] bg-slate-900 w-full overflow-hidden select-none group cursor-grab active:cursor-grabbing"
+          >
             <img
               src={currentDisplayImage}
               alt={tour.title}
               className="w-full h-full object-cover transition-all duration-300"
             />
 
-            {/* Left Arrow Scroller */}
+            {/* Left Arrow Button (Matching Holidify circular white icon) */}
             {galleryList.length > 1 && (
               <button
                 type="button"
                 onClick={handlePrevImage}
                 aria-label="Previous Photo"
-                className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-white/90 hover:bg-white text-slate-800 flex items-center justify-center transition shadow-lg z-10 cursor-pointer active:scale-95"
+                className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-white/95 hover:bg-white text-slate-800 flex items-center justify-center transition shadow-[0_4px_14px_rgba(0,0,0,0.35)] z-20 cursor-pointer active:scale-95"
               >
-                <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6" />
+                <ChevronLeft className="w-6 h-6 text-slate-800" strokeWidth={2.5} />
               </button>
             )}
 
-            {/* Right Arrow Scroller */}
+            {/* Right Arrow Button (Matching Holidify circular white icon) */}
             {galleryList.length > 1 && (
               <button
                 type="button"
                 onClick={handleNextImage}
                 aria-label="Next Photo"
-                className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-white/90 hover:bg-white text-slate-800 flex items-center justify-center transition shadow-lg z-10 cursor-pointer active:scale-95"
+                className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-white/95 hover:bg-white text-slate-800 flex items-center justify-center transition shadow-[0_4px_14px_rgba(0,0,0,0.35)] z-20 cursor-pointer active:scale-95"
               >
-                <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6" />
+                <ChevronRight className="w-6 h-6 text-slate-800" strokeWidth={2.5} />
               </button>
             )}
 
-            {/* Image Counter & Badge */}
-            <div className="absolute bottom-3 right-3 flex items-center gap-2">
-              <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-black/60 text-white backdrop-blur-md">
+            {/* Carousel Indicator Dots at Bottom Center */}
+            {galleryList.length > 1 && (
+              <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-1.5 z-10 bg-black/40 backdrop-blur-md px-2.5 py-1 rounded-full">
+                {galleryList.map((_, idx) => (
+                  <button
+                    key={idx}
+                    type="button"
+                    onClick={() => setCurrentImageIndex(idx)}
+                    className={`transition-all rounded-full ${
+                      currentImageIndex === idx
+                        ? 'w-5 h-2 bg-white'
+                        : 'w-2 h-2 bg-white/50 hover:bg-white/80'
+                    }`}
+                    aria-label={`Go to slide ${idx + 1}`}
+                  />
+                ))}
+              </div>
+            )}
+
+            {/* Image Counter Badge on Bottom Right */}
+            <div className="absolute bottom-3 right-3 flex items-center gap-2 z-10">
+              <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-black/70 text-white backdrop-blur-md shadow-sm">
                 {currentImageIndex + 1} / {galleryList.length} Photos
               </span>
             </div>
 
-            <div className="absolute top-3 left-3 flex flex-wrap gap-2">
+            {/* Top Badges */}
+            <div className="absolute top-3 left-3 flex flex-wrap gap-2 z-10">
               <span className="px-3 py-1 rounded-full text-xs font-bold bg-[#ea384d] text-white shadow-sm">
                 {tour.badge || tour.category}
               </span>
