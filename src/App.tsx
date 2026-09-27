@@ -316,14 +316,14 @@ export default function App() {
             <a href="#hero" className="hover:text-[#f1683a] transition-colors py-1">
               Home
             </a>
-            <a href="#popular-tours" className="hover:text-[#f1683a] transition-colors py-1">
-              Tours
-            </a>
-            <a href="#packages-section" className="hover:text-[#f1683a] transition-colors py-1 text-amber-300">
-              Packages
-            </a>
-            <a href="#bus-tours-section" className="hover:text-[#f1683a] transition-colors py-1">
+            <a href="#bus-tours-section" className="hover:text-[#f1683a] transition-colors py-1 text-amber-300 font-bold">
               Bus Tours
+            </a>
+            <a href="#popular-tours" className="hover:text-[#f1683a] transition-colors py-1">
+              Popular Tours
+            </a>
+            <a href="#packages-section" className="hover:text-[#f1683a] transition-colors py-1">
+              Packages
             </a>
             <a href="#why-choose" className="hover:text-[#f1683a] transition-colors py-1">
               Why Us
@@ -444,46 +444,41 @@ export default function App() {
       {/* ✦ EXACT ADIYOGI HERO BANNER SLIDER WITH FLOATING THUMBNAILS & ANIMATIONS ✦ */}
       <AdiyogiHeroSlider onOpenQuoteModal={() => setIsQuotePopupOpen(true)} />
 
-      {/* ✦ Popular Tours Section ✦ */}
-      <section id="popular-tours" className="py-12 sm:py-20 px-3 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
+      {/* ✦ Dedicated Bus Tours & Yatras Section (Placed Before Popular Tours as Requested) ✦ */}
+      <section id="bus-tours-section" className="py-12 sm:py-20 px-3 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 sm:gap-6 mb-8 sm:mb-14">
           <div>
-            <span className="text-[10px] sm:text-xs uppercase tracking-[0.25em] text-amber-400 font-semibold block mb-1.5">
-              Curated Journeys
+            <span className="text-[10px] sm:text-xs uppercase tracking-[0.25em] text-[#f1683a] font-semibold block mb-1.5">
+              Deluxe 2x2 AC Bus Pilgrimages
             </span>
             <h2 className="font-serif text-2xl sm:text-4xl md:text-5xl font-bold text-white tracking-tight">
-              Popular Tours
+              Upcoming Spiritual Bus Tours
             </h2>
-            <div className="w-12 sm:w-16 h-0.5 bg-amber-500 mt-2.5 mb-3" />
+            <div className="w-12 sm:w-16 h-0.5 bg-[#f1683a] mt-2.5 mb-3" />
             <p className="text-slate-400 text-xs sm:text-base max-w-2xl leading-relaxed">
-              Experience hand-picked holiday itineraries and divine pilgrimages across the snow peaks of Himachal and the tranquil valleys of Uttarakhand.
+              Departing regularly from Muzaffarnagar (Central Bus Stand), Meerut Bypass, and Delhi NCR with pure satvik food and experienced yatra managers.
             </p>
           </div>
         </div>
 
-        {visiblePopularTours.length === 0 ? (
+        {visibleBusTours.length === 0 ? (
           <div className="p-12 text-center text-slate-400 luxury-card">
-            <p className="mb-4">All popular tours are currently hidden.</p>
+            <p className="mb-4">No active bus tours currently displayed.</p>
             <button
               onClick={() => setIsAdminModalOpen(true)}
               className="btn-luxury-primary"
             >
-              Open Manager to Unhide or Add Tours
+              Add or Unhide Bus Tours
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-7">
-            {visiblePopularTours.map((tour) => {
-              const price = Number(tour.price || 0);
-              const originalPrice = Number(tour.originalPrice || 0);
-              const hasDiscount = originalPrice > price;
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-8">
+            {visibleBusTours.map((tour) => {
               const whatsappUrl = getWhatsAppBookingUrl(tour);
-
               return (
-                <div key={tour.id} className="luxury-card flex flex-row sm:flex-col group overflow-hidden h-36 sm:h-auto">
-                  {/* Image Banner: half height / compact on mobile */}
+                <div key={tour.id} className="luxury-card flex flex-row sm:flex-col group overflow-hidden sm:h-auto">
                   <div
-                    className="relative w-36 sm:w-full h-full sm:aspect-[4/3] shrink-0 overflow-hidden bg-slate-900 cursor-pointer"
+                    className="relative w-36 sm:w-full h-full sm:aspect-[16/10] shrink-0 overflow-hidden bg-slate-900 cursor-pointer"
                     onClick={() => handleOpenTour(tour)}
                   >
                     <img
@@ -497,73 +492,75 @@ export default function App() {
                         }
                       }}
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#0E1422] via-transparent to-black/20 pointer-events-none" />
-                    <div className="absolute top-2 left-2 bg-black/80 backdrop-blur-md px-1.5 py-0.5 rounded text-[9px] sm:text-[11px] font-semibold tracking-wider uppercase text-amber-300 border border-amber-500/30">
-                      {tour.duration || 'Multi-Day'}
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#0E1422] via-transparent to-black/20" />
+                    <div className="absolute top-2 left-2 bg-[#f1683a] text-white font-bold px-1.5 py-0.5 rounded text-[9px] sm:text-[11px]">
+                      {tour.badge || 'Bus Yatra'}
                     </div>
-                    <div className="absolute bottom-1.5 left-1.5 bg-black/70 backdrop-blur-xs px-1.5 py-0.5 rounded text-[9px] sm:text-[11px] text-slate-300 flex items-center gap-1">
-                      <MapPin className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-amber-400" />
-                      <span className="truncate max-w-[100px] sm:max-w-[200px]">{tour.destination}</span>
+                    <div className="absolute bottom-1.5 left-1.5 text-[9px] sm:text-xs text-slate-300 flex items-center gap-1 bg-black/70 px-1.5 py-0.5 rounded backdrop-blur-xs">
+                      <Bus className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 text-[#f1683a]" />
+                      <span>{tour.busType}</span>
                     </div>
                   </div>
 
-                  {/* Card Content: compact half-height design */}
-                  <div className="p-2.5 sm:p-5 flex-1 flex flex-col justify-between overflow-hidden">
+                  <div className="p-2.5 sm:p-5 flex-1 flex flex-col justify-between space-y-2 sm:space-y-4">
                     <div>
+                      <div className="flex items-center justify-between gap-1 mb-1">
+                        <span className="text-[9px] sm:text-[11px] text-amber-300 font-mono">
+                          📅 {tour.departureDate}
+                        </span>
+                        <span className="text-[9px] sm:text-xs text-emerald-400 font-bold">
+                          {tour.availableSeats} seats left
+                        </span>
+                      </div>
                       <h3
                         onClick={() => handleOpenTour(tour)}
-                        className="font-serif text-xs sm:text-base font-bold text-white group-hover:text-amber-300 transition-colors mb-0.5 sm:mb-2 cursor-pointer line-clamp-1 sm:line-clamp-2 leading-snug"
+                        className="font-serif text-xs sm:text-lg font-bold text-white group-hover:text-amber-300 transition-colors cursor-pointer line-clamp-1 leading-snug"
                       >
                         {tour.title}
                       </h3>
-                      <p className="hidden sm:block text-slate-400 text-xs sm:text-sm leading-relaxed mb-4 line-clamp-2">
+                      <p className="hidden sm:block text-slate-400 text-xs leading-relaxed line-clamp-2 mt-1">
                         {tour.description}
                       </p>
                     </div>
 
-                    <div className="pt-1.5 sm:pt-4 border-t border-slate-800/80">
-                      <div className="flex items-baseline justify-between mb-1.5 sm:mb-4">
-                        <div>
-                          <span className="hidden sm:block text-[10px] uppercase tracking-wider text-slate-500 font-semibold">
-                            Starting from
-                          </span>
-                          <div className="flex items-baseline gap-1 flex-wrap">
-                            {hasDiscount && (
-                              <span className="text-[10px] sm:text-xs text-slate-500 line-through">
-                                ₹{originalPrice.toLocaleString('en-IN')}
-                              </span>
-                            )}
-                            <span className="text-sm sm:text-lg font-bold text-amber-400">
-                              ₹{price.toLocaleString('en-IN')}
-                            </span>
-                            <span className="text-[9px] sm:text-[10px] text-slate-400">/ person</span>
-                          </div>
-                        </div>
+                    <div className="hidden sm:block space-y-1.5 pt-2 border-t border-slate-800 text-xs text-slate-300">
+                      <div className="flex justify-between">
+                        <span className="text-slate-400">Duration:</span>
+                        <span className="text-white font-medium">{tour.duration}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-slate-400">Route:</span>
+                        <span className="text-slate-300 text-right truncate max-w-[220px]">{tour.route}</span>
+                      </div>
+                    </div>
 
-                        {tour.availableSeats && Number(tour.availableSeats) <= 6 && (
-                          <span className="text-[9px] text-red-400 font-bold bg-red-950/40 border border-red-800/50 px-1.5 py-0.5 rounded">
-                            {tour.availableSeats} left
-                          </span>
-                        )}
+                    <div className="pt-1.5 sm:pt-3 border-t border-slate-800 flex items-center justify-between">
+                      <div>
+                        <span className="hidden sm:block text-[10px] text-slate-500 uppercase tracking-wider">Per Seat Fare</span>
+                        <div className="flex items-baseline gap-1">
+                          {tour.originalPrice && tour.originalPrice > tour.price && (
+                            <span className="text-[10px] sm:text-xs text-slate-500 line-through">₹{tour.originalPrice}</span>
+                          )}
+                          <span className="text-sm sm:text-xl font-bold text-amber-400">₹{tour.price.toLocaleString('en-IN')}</span>
+                        </div>
                       </div>
 
-                      <div className="grid grid-cols-2 gap-1.5">
+                      <div className="flex items-center gap-1.5 sm:gap-2">
                         <button
                           type="button"
                           onClick={() => handleOpenTour(tour)}
-                          className="inline-flex items-center justify-center gap-1 px-2 py-1 sm:py-2 rounded text-[10px] sm:text-xs font-semibold uppercase tracking-wider bg-slate-800/90 hover:bg-amber-500 hover:text-slate-950 text-white transition-all cursor-pointer active:scale-95"
+                          className="px-2 py-1 sm:px-3 sm:py-2 bg-slate-800 hover:bg-slate-700 text-white rounded text-[10px] sm:text-xs font-semibold cursor-pointer"
                         >
-                          <Eye className="w-3 h-3" />
-                          <span>INFO</span>
+                          Info
                         </button>
                         <a
                           href={whatsappUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="inline-flex items-center justify-center gap-1 px-2 py-1 sm:py-2 rounded text-[10px] sm:text-xs font-bold uppercase tracking-wider bg-emerald-600 hover:bg-emerald-500 text-white transition-all text-center active:scale-95 shadow-sm"
+                          className="px-2.5 py-1 sm:px-3.5 sm:py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded text-[10px] sm:text-xs font-bold flex items-center gap-1"
                         >
                           <MessageCircle className="w-3 h-3 fill-white" />
-                          <span>BOOK</span>
+                          <span>Book</span>
                         </a>
                       </div>
                     </div>
@@ -573,50 +570,49 @@ export default function App() {
             })}
           </div>
         )}
-
-        <div className="mt-12 text-center">
-          <a href="#packages-section" className="btn-luxury-outline inline-flex">
-            <span>VIEW ALL TOURS & CUSTOM PACKAGES →</span>
-          </a>
-        </div>
       </section>
 
-      {/* ✦ Dedicated Bus Tours & Yatras Section ✦ */}
-      <section id="bus-tours-section" className="py-12 sm:py-20 bg-[#0B101A] border-t border-slate-900">
+      {/* ✦ Popular Tours Section ✦ */}
+      <section id="popular-tours" className="py-12 sm:py-20 bg-[#0B101A] border-t border-slate-900 w-full">
         <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 sm:gap-6 mb-8 sm:mb-14">
             <div>
-              <span className="text-[10px] sm:text-xs uppercase tracking-[0.25em] text-[#f1683a] font-semibold block mb-1.5">
-                Deluxe 2x2 AC Bus Pilgrimages
+              <span className="text-[10px] sm:text-xs uppercase tracking-[0.25em] text-amber-400 font-semibold block mb-1.5">
+                Curated Journeys
               </span>
               <h2 className="font-serif text-2xl sm:text-4xl md:text-5xl font-bold text-white tracking-tight">
-                Upcoming Spiritual Bus Tours
+                Popular Tours
               </h2>
-              <div className="w-12 sm:w-16 h-0.5 bg-[#f1683a] mt-2.5 mb-3" />
-              <p className="text-slate-400 text-xs sm:text-base max-w-2xl">
-                Departing regularly from Muzaffarnagar (Central Bus Stand), Meerut Bypass, and Delhi NCR with pure satvik food and experienced yatra managers.
+              <div className="w-12 sm:w-16 h-0.5 bg-amber-500 mt-2.5 mb-3" />
+              <p className="text-slate-400 text-xs sm:text-base max-w-2xl leading-relaxed">
+                Experience hand-picked holiday itineraries and divine pilgrimages across the snow peaks of Himachal and the tranquil valleys of Uttarakhand.
               </p>
             </div>
           </div>
 
-          {visibleBusTours.length === 0 ? (
+          {visiblePopularTours.length === 0 ? (
             <div className="p-12 text-center text-slate-400 luxury-card">
-              <p className="mb-4">No active bus tours currently displayed.</p>
+              <p className="mb-4">All popular tours are currently hidden.</p>
               <button
                 onClick={() => setIsAdminModalOpen(true)}
                 className="btn-luxury-primary"
               >
-                Add or Unhide Bus Tours
+                Open Manager to Unhide or Add Tours
               </button>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-8">
-              {visibleBusTours.map((tour) => {
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-7">
+              {visiblePopularTours.map((tour) => {
+                const price = Number(tour.price || 0);
+                const originalPrice = Number(tour.originalPrice || 0);
+                const hasDiscount = originalPrice > price;
                 const whatsappUrl = getWhatsAppBookingUrl(tour);
+
                 return (
-                  <div key={tour.id} className="luxury-card flex flex-row sm:flex-col group overflow-hidden sm:h-auto">
+                  <div key={tour.id} className="luxury-card flex flex-row sm:flex-col group overflow-hidden h-36 sm:h-auto">
+                    {/* Image Banner: half height / compact on mobile */}
                     <div
-                      className="relative w-36 sm:w-full h-full sm:aspect-[16/10] shrink-0 overflow-hidden bg-slate-900 cursor-pointer"
+                      className="relative w-36 sm:w-full h-full sm:aspect-[4/3] shrink-0 overflow-hidden bg-slate-900 cursor-pointer"
                       onClick={() => handleOpenTour(tour)}
                     >
                       <img
@@ -630,75 +626,73 @@ export default function App() {
                           }
                         }}
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-[#0E1422] via-transparent to-black/20" />
-                      <div className="absolute top-2 left-2 bg-[#f1683a] text-white font-bold px-1.5 py-0.5 rounded text-[9px] sm:text-[11px]">
-                        {tour.badge || 'Bus Yatra'}
+                      <div className="absolute inset-0 bg-gradient-to-t from-[#0E1422] via-transparent to-black/20 pointer-events-none" />
+                      <div className="absolute top-2 left-2 bg-black/80 backdrop-blur-md px-1.5 py-0.5 rounded text-[9px] sm:text-[11px] font-semibold tracking-wider uppercase text-amber-300 border border-amber-500/30">
+                        {tour.duration || 'Multi-Day'}
                       </div>
-                      <div className="absolute bottom-1.5 left-1.5 text-[9px] sm:text-xs text-slate-300 flex items-center gap-1 bg-black/70 px-1.5 py-0.5 rounded backdrop-blur-xs">
-                        <Bus className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 text-[#f1683a]" />
-                        <span>{tour.busType}</span>
+                      <div className="absolute bottom-1.5 left-1.5 bg-black/70 backdrop-blur-xs px-1.5 py-0.5 rounded text-[9px] sm:text-[11px] text-slate-300 flex items-center gap-1">
+                        <MapPin className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-amber-400" />
+                        <span className="truncate max-w-[100px] sm:max-w-[200px]">{tour.destination}</span>
                       </div>
                     </div>
 
-                    <div className="p-2.5 sm:p-5 flex-1 flex flex-col justify-between space-y-2 sm:space-y-4">
+                    {/* Card Content: compact half-height design */}
+                    <div className="p-2.5 sm:p-5 flex-1 flex flex-col justify-between overflow-hidden">
                       <div>
-                        <div className="flex items-center justify-between gap-1 mb-1">
-                          <span className="text-[9px] sm:text-[11px] text-amber-300 font-mono">
-                            📅 {tour.departureDate}
-                          </span>
-                          <span className="text-[9px] sm:text-xs text-emerald-400 font-bold">
-                            {tour.availableSeats} seats left
-                          </span>
-                        </div>
                         <h3
                           onClick={() => handleOpenTour(tour)}
-                          className="font-serif text-xs sm:text-lg font-bold text-white group-hover:text-amber-300 transition-colors cursor-pointer line-clamp-1 leading-snug"
+                          className="font-serif text-xs sm:text-base font-bold text-white group-hover:text-amber-300 transition-colors mb-0.5 sm:mb-2 cursor-pointer line-clamp-1 sm:line-clamp-2 leading-snug"
                         >
                           {tour.title}
                         </h3>
-                        <p className="hidden sm:block text-slate-400 text-xs leading-relaxed line-clamp-2 mt-1">
+                        <p className="hidden sm:block text-slate-400 text-xs sm:text-sm leading-relaxed mb-4 line-clamp-2">
                           {tour.description}
                         </p>
                       </div>
 
-                      <div className="hidden sm:block space-y-1.5 pt-2 border-t border-slate-800 text-xs text-slate-300">
-                        <div className="flex justify-between">
-                          <span className="text-slate-400">Duration:</span>
-                          <span className="text-white font-medium">{tour.duration}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-slate-400">Route:</span>
-                          <span className="text-slate-300 text-right truncate max-w-[220px]">{tour.route}</span>
-                        </div>
-                      </div>
-
-                      <div className="pt-1.5 sm:pt-3 border-t border-slate-800 flex items-center justify-between">
-                        <div>
-                          <span className="hidden sm:block text-[10px] text-slate-500 uppercase tracking-wider">Per Seat Fare</span>
-                          <div className="flex items-baseline gap-1">
-                            {tour.originalPrice && tour.originalPrice > tour.price && (
-                              <span className="text-[10px] sm:text-xs text-slate-500 line-through">₹{tour.originalPrice}</span>
-                            )}
-                            <span className="text-sm sm:text-xl font-bold text-amber-400">₹{tour.price.toLocaleString('en-IN')}</span>
+                      <div className="pt-1.5 sm:pt-4 border-t border-slate-800/80">
+                        <div className="flex items-baseline justify-between mb-1.5 sm:mb-4">
+                          <div>
+                            <span className="hidden sm:block text-[10px] uppercase tracking-wider text-slate-500 font-semibold">
+                              Starting from
+                            </span>
+                            <div className="flex items-baseline gap-1 flex-wrap">
+                              {hasDiscount && (
+                                <span className="text-[10px] sm:text-xs text-slate-500 line-through">
+                                  ₹{originalPrice.toLocaleString('en-IN')}
+                                </span>
+                              )}
+                              <span className="text-sm sm:text-lg font-bold text-amber-400">
+                                ₹{price.toLocaleString('en-IN')}
+                              </span>
+                              <span className="text-[9px] sm:text-[10px] text-slate-400">/ person</span>
+                            </div>
                           </div>
+
+                          {tour.availableSeats && Number(tour.availableSeats) <= 6 && (
+                            <span className="text-[9px] text-red-400 font-bold bg-red-950/40 border border-red-800/50 px-1.5 py-0.5 rounded">
+                              {tour.availableSeats} left
+                            </span>
+                          )}
                         </div>
 
-                        <div className="flex items-center gap-1.5 sm:gap-2">
+                        <div className="grid grid-cols-2 gap-1.5">
                           <button
                             type="button"
                             onClick={() => handleOpenTour(tour)}
-                            className="px-2 py-1 sm:px-3 sm:py-2 bg-slate-800 hover:bg-slate-700 text-white rounded text-[10px] sm:text-xs font-semibold cursor-pointer"
+                            className="inline-flex items-center justify-center gap-1 px-2 py-1 sm:py-2 rounded text-[10px] sm:text-xs font-semibold uppercase tracking-wider bg-slate-800/90 hover:bg-amber-500 hover:text-slate-950 text-white transition-all cursor-pointer active:scale-95"
                           >
-                            Info
+                            <Eye className="w-3 h-3" />
+                            <span>INFO</span>
                           </button>
                           <a
                             href={whatsappUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="px-2.5 py-1 sm:px-3.5 sm:py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded text-[10px] sm:text-xs font-bold flex items-center gap-1"
+                            className="inline-flex items-center justify-center gap-1 px-2 py-1 sm:py-2 rounded text-[10px] sm:text-xs font-bold uppercase tracking-wider bg-emerald-600 hover:bg-emerald-500 text-white transition-all text-center active:scale-95 shadow-sm"
                           >
                             <MessageCircle className="w-3 h-3 fill-white" />
-                            <span>Book</span>
+                            <span>BOOK</span>
                           </a>
                         </div>
                       </div>
@@ -708,6 +702,12 @@ export default function App() {
               })}
             </div>
           )}
+
+          <div className="mt-12 text-center">
+            <a href="#packages-section" className="btn-luxury-outline inline-flex">
+              <span>VIEW ALL TOURS & CUSTOM PACKAGES →</span>
+            </a>
+          </div>
         </div>
       </section>
 
@@ -987,6 +987,11 @@ export default function App() {
                   </a>
                 </li>
                 <li>
+                  <a href="#bus-tours-section" className="hover:text-amber-300 transition">
+                    Upcoming Spiritual Bus Tours
+                  </a>
+                </li>
+                <li>
                   <a href="#popular-tours" className="hover:text-amber-300 transition">
                     Popular Tours
                   </a>
@@ -994,11 +999,6 @@ export default function App() {
                 <li>
                   <a href="#packages-section" className="hover:text-amber-300 transition">
                     Holiday Packages
-                  </a>
-                </li>
-                <li>
-                  <a href="#bus-tours-section" className="hover:text-amber-300 transition">
-                    Upcoming Bus Tours
                   </a>
                 </li>
                 <li>
