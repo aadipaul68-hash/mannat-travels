@@ -51,6 +51,7 @@ export const TourDetailModal: React.FC<TourDetailModalProps> = ({
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const touchStartXRef = useRef<number | null>(null);
+  const touchStartYRef = useRef<number | null>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   // Section anchor refs for smooth tab scrolling inside the modal
@@ -60,32 +61,43 @@ export const TourDetailModal: React.FC<TourDetailModalProps> = ({
   const stayMealsRef = useRef<HTMLDivElement>(null);
   const policiesRef = useRef<HTMLDivElement>(null);
 
+  const fallbackImage = tour
+    ? getDestinationImage(`${tour.title} ${tour.destination || ''} ${tour.route || ''}`)
+    : '/images/chardham.jpg';
+
   const galleryList: string[] = tour
     ? Array.isArray(tour.galleryImages) && tour.galleryImages.length > 0
       ? tour.galleryImages.filter(Boolean)
       : tour.image
       ? [tour.image]
-      : []
+      : [fallbackImage]
     : [];
 
   const handleTouchStart = (e: React.TouchEvent) => {
     touchStartXRef.current = e.touches[0].clientX;
+    touchStartYRef.current = e.touches[0].clientY;
   };
 
   const handleTouchEnd = (e: React.TouchEvent) => {
-    if (touchStartXRef.current === null) return;
+    if (touchStartXRef.current === null || touchStartYRef.current === null) return;
     const touchEndX = e.changedTouches[0].clientX;
-    const diff = touchStartXRef.current - touchEndX;
-    if (Math.abs(diff) > 40) {
-      if (diff > 0) {
+    const touchEndY = e.changedTouches[0].clientY;
+    const diffX = touchStartXRef.current - touchEndX;
+    const diffY = touchStartYRef.current - touchEndY;
+
+    // Only switch photos if horizontal swipe is significantly stronger than vertical scroll
+    if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 45) {
+      if (diffX > 0) {
         handleNextImage();
       } else {
         handlePrevImage();
       }
     }
     touchStartXRef.current = null;
+    touchStartYRef.current = null;
   };
 
+  // Reset states only when a different tour is opened
   useEffect(() => {
     if (!tour) return;
     setCurrentImageIndex(0);
@@ -94,7 +106,10 @@ export const TourDetailModal: React.FC<TourDetailModalProps> = ({
     setIsSearchOpen(false);
     setIsMenuOpen(false);
     setSearchQuery('');
+  }, [tour?.id]);
 
+  useEffect(() => {
+    if (!tour) return;
     const prevOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
 
@@ -117,7 +132,7 @@ export const TourDetailModal: React.FC<TourDetailModalProps> = ({
       document.body.style.overflow = prevOverflow;
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [tour, onClose, galleryList.length, isSearchOpen, isMenuOpen]);
+  }, [tour, onClose, isSearchOpen, isMenuOpen]);
 
   // Focus search input when search is opened
   useEffect(() => {
@@ -226,13 +241,13 @@ export const TourDetailModal: React.FC<TourDetailModalProps> = ({
 
   return (
     <div
-      className="fixed inset-0 z-[100] overflow-y-auto bg-black/85 backdrop-blur-md flex items-center justify-center p-0 sm:p-4"
+      className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-md flex items-center justify-center p-0 sm:p-4 overflow-hidden"
       onClick={onClose}
       role="dialog"
       aria-modal="true"
     >
       <div
-        className={`w-full max-w-xl sm:max-w-2xl md:max-w-3xl lg:max-w-4xl min-h-screen sm:min-h-0 sm:rounded-2xl overflow-hidden shadow-2xl flex flex-col sm:max-h-[92vh] relative transition-colors duration-300 ${
+        className={`w-full max-w-xl sm:max-w-2xl md:max-w-3xl lg:max-w-4xl h-[100dvh] sm:h-auto sm:max-h-[92vh] sm:rounded-2xl overflow-hidden shadow-2xl flex flex-col relative transition-colors duration-300 ${
           isDark
             ? 'bg-[#0E1422] text-slate-100 border border-amber-500/25'
             : 'bg-white text-slate-800 border border-slate-200'
@@ -600,55 +615,65 @@ export const TourDetailModal: React.FC<TourDetailModalProps> = ({
           <div
             onTouchStart={handleTouchStart}
             onTouchEnd={handleTouchEnd}
-            className="relative aspect-[4/3] sm:aspect-[16/9] bg-slate-950 w-full overflow-hidden select-none group cursor-grab active:cursor-grabbing"
+            className="relative w-full h-64 xs:h-72 sm:h-80 md:h-96 bg-slate-950 overflow-hidden select-none group"
           >
+            {/* Ambient Blurred Background for Full Framing */}
+            <div
+              className="absolute inset-0 bg-cover bg-center filter blur-md opacity-35 scale-110 pointer-events-none"
+              style={{ backgroundImage: `url(${currentDisplayImage})` }}
+            />
+
+            {/* Main Crisp Destination Photo */}
             <img
               src={currentDisplayImage}
               alt={tour.title}
-              className="w-full h-full object-cover transition-all duration-300"
+              className="relative z-1 w-full h-full object-cover object-center transition-all duration-300"
               onError={(e) => {
                 const fallback = getDestinationImage(tour.title + ' ' + (tour.destination || ''));
-                if (e.currentTarget.src !== fallback) {
+                if (!e.currentTarget.src.includes(fallback)) {
                   e.currentTarget.src = fallback;
                 }
               }}
             />
 
-            {/* Left Arrow Button (Matching Holidify circular white icon) */}
+            {/* Subtle Gradient Overlays for contrast */}
+            <div className="absolute inset-0 z-2 bg-gradient-to-t from-black/80 via-transparent to-black/30 pointer-events-none" />
+
+            {/* Left Arrow Button */}
             {galleryList.length > 1 && (
               <button
                 type="button"
                 onClick={handlePrevImage}
                 aria-label="Previous Photo"
-                className={`absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-11 sm:h-11 rounded-full flex items-center justify-center transition shadow-xl z-20 cursor-pointer active:scale-95 ${
+                className={`absolute left-2.5 top-1/2 -translate-y-1/2 w-9 h-9 sm:w-11 sm:h-11 rounded-full flex items-center justify-center transition shadow-xl z-20 cursor-pointer active:scale-95 ${
                   isDark
                     ? 'bg-black/80 hover:bg-[#f1683a] text-white border border-white/20'
                     : 'bg-white/95 hover:bg-white text-slate-800 shadow-[0_4px_14px_rgba(0,0,0,0.35)]'
                 }`}
               >
-                <ChevronLeft className="w-6 h-6" strokeWidth={2.5} />
+                <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6" strokeWidth={2.5} />
               </button>
             )}
 
-            {/* Right Arrow Button (Matching Holidify circular white icon) */}
+            {/* Right Arrow Button */}
             {galleryList.length > 1 && (
               <button
                 type="button"
                 onClick={handleNextImage}
                 aria-label="Next Photo"
-                className={`absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-11 sm:h-11 rounded-full flex items-center justify-center transition shadow-xl z-20 cursor-pointer active:scale-95 ${
+                className={`absolute right-2.5 top-1/2 -translate-y-1/2 w-9 h-9 sm:w-11 sm:h-11 rounded-full flex items-center justify-center transition shadow-xl z-20 cursor-pointer active:scale-95 ${
                   isDark
                     ? 'bg-black/80 hover:bg-[#f1683a] text-white border border-white/20'
                     : 'bg-white/95 hover:bg-white text-slate-800 shadow-[0_4px_14px_rgba(0,0,0,0.35)]'
                 }`}
               >
-                <ChevronRight className="w-6 h-6" strokeWidth={2.5} />
+                <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6" strokeWidth={2.5} />
               </button>
             )}
 
             {/* Carousel Indicator Dots */}
             {galleryList.length > 1 && (
-              <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-1.5 z-10 bg-black/50 backdrop-blur-md px-2.5 py-1 rounded-full border border-white/10">
+              <div className="absolute bottom-2.5 left-1/2 -translate-x-1/2 flex items-center gap-1.5 z-10 bg-black/60 backdrop-blur-md px-2.5 py-1 rounded-full border border-white/10">
                 {galleryList.map((_, idx) => (
                   <button
                     key={idx}
@@ -656,8 +681,8 @@ export const TourDetailModal: React.FC<TourDetailModalProps> = ({
                     onClick={() => setCurrentImageIndex(idx)}
                     className={`transition-all rounded-full ${
                       currentImageIndex === idx
-                        ? 'w-5 h-2 bg-[#f1683a]'
-                        : 'w-2 h-2 bg-white/50 hover:bg-white/80'
+                        ? 'w-5 h-1.5 sm:h-2 bg-[#f1683a]'
+                        : 'w-1.5 sm:w-2 h-1.5 sm:h-2 bg-white/50 hover:bg-white/80'
                     }`}
                     aria-label={`Go to slide ${idx + 1}`}
                   />
@@ -666,24 +691,61 @@ export const TourDetailModal: React.FC<TourDetailModalProps> = ({
             )}
 
             {/* Image Counter Badge */}
-            <div className="absolute bottom-3 right-3 flex items-center gap-2 z-10">
-              <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-black/75 text-white backdrop-blur-md border border-white/10 shadow-sm">
+            <div className="absolute bottom-2.5 right-2.5 flex items-center gap-2 z-10">
+              <span className="px-2.5 py-1 rounded-full text-[10px] sm:text-xs font-semibold bg-black/80 text-white backdrop-blur-md border border-white/10 shadow-sm">
                 {currentImageIndex + 1} / {galleryList.length} Photos
               </span>
             </div>
 
             {/* Top Badges */}
-            <div className="absolute top-3 left-3 flex flex-wrap gap-2 z-10">
-              <span className="px-3 py-1 rounded-full text-xs font-bold bg-[#f1683a] text-white shadow-sm">
+            <div className="absolute top-2.5 left-2.5 flex flex-wrap gap-1.5 sm:gap-2 z-10">
+              <span className="px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-bold bg-[#f1683a] text-white shadow-sm">
                 {tour.badge || tour.category}
               </span>
               {isUrgent && (
-                <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-amber-500 text-slate-950 animate-pulse shadow-sm">
-                  Only {availableSeats} Seats Left!
+                <span className="px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-bold bg-amber-500 text-slate-950 animate-pulse shadow-sm">
+                  {availableSeats} Seats Left!
                 </span>
               )}
             </div>
           </div>
+
+          {/* ✦ Horizontal Photo Thumbnails Strip (Tap to view any destination photo) ✦ */}
+          {galleryList.length > 1 && (
+            <div
+              className={`px-3 py-2 border-b flex items-center gap-2 overflow-x-auto scrollbar-none transition-colors shrink-0 ${
+                isDark ? 'bg-[#090E1A] border-slate-800' : 'bg-slate-50 border-slate-200'
+              }`}
+            >
+              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 shrink-0">
+                Photos:
+              </span>
+              {galleryList.map((img, idx) => (
+                <button
+                  key={idx}
+                  type="button"
+                  onClick={() => setCurrentImageIndex(idx)}
+                  className={`relative w-14 h-10 sm:w-16 sm:h-11 rounded-lg overflow-hidden shrink-0 border-2 transition-all cursor-pointer ${
+                    currentImageIndex === idx
+                      ? 'border-[#f1683a] scale-105 shadow-md shadow-[#f1683a]/30'
+                      : 'border-transparent opacity-65 hover:opacity-100 hover:border-slate-500'
+                  }`}
+                >
+                  <img
+                    src={img}
+                    alt={`Thumbnail ${idx + 1}`}
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      const fallback = getDestinationImage(tour.title + ' ' + (tour.destination || ''));
+                      if (!e.currentTarget.src.includes(fallback)) {
+                        e.currentTarget.src = fallback;
+                      }
+                    }}
+                  />
+                </button>
+              ))}
+            </div>
+          )}
 
           {/* ✦ 4. MAIN PACKAGE OVERVIEW SECTION ✦ */}
           <div ref={overviewRef} className="p-4 sm:p-6 space-y-4">
