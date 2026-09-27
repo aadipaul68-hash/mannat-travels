@@ -27,7 +27,10 @@ import {
   ChevronLeft,
   Sun,
   Moon,
-  Info
+  Info,
+  Home,
+  Search,
+  Menu
 } from 'lucide-react';
 import {
   TourItem,
@@ -43,6 +46,8 @@ interface TourDetailPageProps {
   allTours?: TourItem[];
   onSelectTour: (tour: TourItem) => void;
   onBack: () => void;
+  onOpenSearch?: () => void;
+  onOpenMenu?: () => void;
   onOpenQuote?: () => void;
   onOpenCustomerAuth?: () => void;
   onOpenAdmin?: () => void;
@@ -55,6 +60,8 @@ export const TourDetailPage: React.FC<TourDetailPageProps> = ({
   allTours = [],
   onSelectTour,
   onBack,
+  onOpenSearch,
+  onOpenMenu,
   onOpenQuote,
   onOpenCustomerAuth,
   onOpenAdmin,
@@ -267,21 +274,73 @@ export const TourDetailPage: React.FC<TourDetailPageProps> = ({
             </div>
           </div>
 
-          {/* Right Header Hotline & Buttons */}
-          <div className="flex items-center gap-2 sm:gap-3">
+          {/* ✦ Upper Right Header Buttons: Home | Search | Menu (Phone Number Removed) ✦ */}
+          <div className="flex items-center gap-1.5 sm:gap-2.5">
+            
+            {/* 1. Home Button */}
+            <button
+              type="button"
+              onClick={onBack}
+              title="Return to Home"
+              className={`px-3 py-2 rounded-xl border flex items-center gap-1.5 text-xs font-bold transition cursor-pointer active:scale-95 ${
+                isDark
+                  ? 'border-slate-800 bg-slate-900/90 hover:bg-slate-800 text-slate-200 hover:border-amber-400'
+                  : 'border-slate-200 bg-slate-100 hover:bg-slate-200 text-slate-800'
+              }`}
+            >
+              <Home className="w-4 h-4 text-amber-400" />
+              <span className="hidden sm:inline">Home</span>
+            </button>
+
+            {/* 2. Search Button */}
+            {onOpenSearch && (
+              <button
+                type="button"
+                onClick={onOpenSearch}
+                title="Search packages & destinations"
+                className={`px-3 py-2 rounded-xl border flex items-center gap-1.5 text-xs font-bold transition cursor-pointer active:scale-95 ${
+                  isDark
+                    ? 'border-slate-800 bg-slate-900/90 hover:bg-slate-800 text-slate-200 hover:border-amber-400'
+                    : 'border-slate-200 bg-slate-100 hover:bg-slate-200 text-slate-800'
+                }`}
+              >
+                <Search className="w-4 h-4 text-[#f1683a]" />
+                <span className="hidden sm:inline">Search</span>
+              </button>
+            )}
+
+            {/* 3. Menu Button */}
+            {onOpenMenu && (
+              <button
+                type="button"
+                onClick={onOpenMenu}
+                title="Open Menu"
+                className={`px-3 py-2 rounded-xl border flex items-center gap-1.5 text-xs font-bold transition cursor-pointer active:scale-95 ${
+                  isDark
+                    ? 'border-slate-800 bg-slate-900/90 hover:bg-slate-800 text-slate-200 hover:border-amber-400'
+                    : 'border-slate-200 bg-slate-100 hover:bg-slate-200 text-slate-800'
+                }`}
+              >
+                <Menu className="w-4 h-4 text-amber-400" />
+                <span className="hidden sm:inline">Menu</span>
+              </button>
+            )}
+
+            {/* Theme Toggle (Dark / Light) */}
             {onToggleTheme && (
               <button
                 type="button"
                 onClick={onToggleTheme}
                 aria-label="Toggle Dark / Light Theme"
                 className={`p-2 rounded-xl border transition cursor-pointer ${
-                  isDark ? 'border-slate-800 bg-slate-900 text-amber-400' : 'border-slate-200 bg-slate-100 text-slate-700'
+                  isDark ? 'border-slate-800 bg-slate-900 text-amber-400 hover:bg-slate-800' : 'border-slate-200 bg-slate-100 text-slate-700 hover:bg-slate-200'
                 }`}
               >
                 {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
               </button>
             )}
 
+            {/* Share Button */}
             <button
               type="button"
               onClick={handleShare}
@@ -293,14 +352,7 @@ export const TourDetailPage: React.FC<TourDetailPageProps> = ({
               <Share2 className="w-4 h-4" />
             </button>
 
-            <a
-              href={`tel:${SITE_INFO.phone}`}
-              className="hidden md:inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border border-slate-700 bg-slate-900/80 hover:border-amber-400 text-white text-xs font-bold transition"
-            >
-              <Phone className="w-3.5 h-3.5 text-[#f1683a]" />
-              <span>{SITE_INFO.phone}</span>
-            </a>
-
+            {/* WhatsApp Booking Link */}
             <a
               href={customWhatsAppUrl}
               target="_blank"
@@ -308,7 +360,7 @@ export const TourDetailPage: React.FC<TourDetailPageProps> = ({
               className="px-3 sm:px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-xs sm:text-sm flex items-center gap-1.5 shadow-md shadow-emerald-950/40 active:scale-95 transition"
             >
               <MessageCircle className="w-4 h-4 fill-white" />
-              <span>Book via WhatsApp</span>
+              <span className="hidden md:inline">WhatsApp</span>
             </a>
           </div>
         </div>

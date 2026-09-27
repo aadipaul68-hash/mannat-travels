@@ -217,10 +217,48 @@ export default function App() {
           allTours={[...visiblePopularTours, ...visibleBusTours, ...visibleHolidayPackages]}
           onSelectTour={handleOpenTour}
           onBack={handleCloseTour}
+          onOpenSearch={() => setIsSearchModalOpen(true)}
+          onOpenMenu={() => setIsMenuDrawerOpen(true)}
           onOpenQuote={() => setIsQuotePopupOpen(true)}
           onOpenCustomerAuth={() => setIsCustomerAuthOpen(true)}
           onOpenAdmin={() => setIsAdminModalOpen(true)}
           onToggleTheme={toggleTheme}
+        />
+
+        {/* Search Modal */}
+        <SearchModal
+          isOpen={isSearchModalOpen}
+          theme={theme}
+          allTours={[...visiblePopularTours, ...visibleBusTours, ...visibleHolidayPackages]}
+          onClose={() => setIsSearchModalOpen(false)}
+          onSelectTour={(tour) => {
+            handleOpenTour(tour);
+            setIsSearchModalOpen(false);
+          }}
+        />
+
+        {/* Menu Drawer */}
+        <MenuDrawer
+          isOpen={isMenuDrawerOpen}
+          theme={theme}
+          onToggleTheme={toggleTheme}
+          onOpenSearch={() => {
+            setIsMenuDrawerOpen(false);
+            setIsSearchModalOpen(true);
+          }}
+          onOpenQuote={() => {
+            setIsMenuDrawerOpen(false);
+            setIsQuotePopupOpen(true);
+          }}
+          onOpenCustomerAuth={() => {
+            setIsMenuDrawerOpen(false);
+            setIsCustomerAuthOpen(true);
+          }}
+          onOpenAdmin={() => {
+            setIsMenuDrawerOpen(false);
+            setIsAdminModalOpen(true);
+          }}
+          onClose={() => setIsMenuDrawerOpen(false)}
         />
 
         {/* Adiyogi Free Quote Popup */}
