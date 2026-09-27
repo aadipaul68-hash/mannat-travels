@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { X, Calendar, MapPin, Check, Phone, MessageCircle, Play, Image as ImageIcon, Video, Clock } from 'lucide-react';
+import { X, Calendar, MapPin, Check, Phone, MessageCircle, Play, Image as ImageIcon, Video, Clock, ChevronLeft, ChevronRight } from 'lucide-react';
 import { TourItem, SITE_INFO, getWhatsAppBookingUrl } from '../data/mannatData';
 
 interface TourDetailModalProps {
@@ -9,25 +9,43 @@ interface TourDetailModalProps {
 
 export const TourDetailModal: React.FC<TourDetailModalProps> = ({ tour, onClose }) => {
   const [activeMediaTab, setActiveMediaTab] = useState<'photos' | 'video'>('photos');
-  const [selectedGalleryImg, setSelectedGalleryImg] = useState<string>('');
+  const [currentImageIndex, setCurrentImageIndex] = useState<number>(0);
+
+  const galleryList: string[] = tour
+    ? Array.isArray(tour.galleryImages) && tour.galleryImages.length > 0
+      ? tour.galleryImages
+      : [tour.image, '/images/kaichi-dham.jpg', '/images/ayodhya-banner.jpg']
+    : [];
 
   useEffect(() => {
     if (!tour) return;
-    setSelectedGalleryImg(tour.image);
+    setCurrentImageIndex(0);
     setActiveMediaTab('photos');
     const prevOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
+      if (e.key === 'ArrowLeft') handlePrevImage();
+      if (e.key === 'ArrowRight') handleNextImage();
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => {
       document.body.style.overflow = prevOverflow;
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [tour, onClose]);
+  }, [tour, onClose, galleryList.length]);
 
   if (!tour) return null;
+
+  const handlePrevImage = () => {
+    setCurrentImageIndex((prev) => (prev === 0 ? galleryList.length - 1 : prev - 1));
+  };
+
+  const handleNextImage = () => {
+    setCurrentImageIndex((prev) => (prev === galleryList.length - 1 ? 0 : prev + 1));
+  };
+
+  const currentDisplayImage = galleryList[currentImageIndex] || tour.image;
 
   const availableSeats = Number(tour.availableSeats || 0);
   const isUrgent = availableSeats >= 1 && availableSeats <= 6;
@@ -36,10 +54,6 @@ export const TourDetailModal: React.FC<TourDetailModalProps> = ({ tour, onClose 
   const hasDiscount = originalPrice > price && price > 0;
   const boarding = tour.boardingLocation || tour.boardingPoints || 'Muzaffarnagar, Meerut & Delhi NCR';
   const whatsappUrl = getWhatsAppBookingUrl(tour);
-
-  const galleryList = Array.isArray(tour.galleryImages) && tour.galleryImages.length > 0
-    ? tour.galleryImages
-    : [tour.image, '/images/kaichi-dham.jpg', '/images/ayodhya-banner.jpg'];
 
   const places = Array.isArray(tour.placesCovered) && tour.placesCovered.length > 0
     ? tour.placesCovered
@@ -89,24 +103,52 @@ export const TourDetailModal: React.FC<TourDetailModalProps> = ({ tour, onClose 
         className="bg-[#0E1422] border border-amber-500/30 rounded-2xl w-full max-w-4xl overflow-hidden shadow-2xl my-4 sm:my-6 flex flex-col text-slate-100 max-h-[92vh]"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Banner with image */}
-        <div className="relative aspect-[16/8] sm:aspect-[21/9] bg-slate-900 shrink-0">
+        {/* Banner with image and Left/Right Arrow Scrollers */}
+        <div className="relative aspect-[16/9] sm:aspect-[21/9] bg-slate-900 shrink-0 group select-none overflow-hidden">
           <img
-            src={selectedGalleryImg || tour.image}
+            src={currentDisplayImage}
             alt={tour.title}
             className="w-full h-full object-cover transition-all duration-300"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#0E1422] via-[#0E1422]/50 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#0E1422] via-[#0E1422]/40 to-transparent" />
           
+          {/* Close Modal Button */}
           <button
             onClick={onClose}
             aria-label="Close modal"
-            className="absolute top-3 right-3 w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-black/70 hover:bg-black text-white flex items-center justify-center transition border border-white/20 z-10"
+            className="absolute top-3 right-3 w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-black/70 hover:bg-black text-white flex items-center justify-center transition border border-white/20 z-20 cursor-pointer"
           >
             <X className="w-4 h-4 sm:w-5 sm:h-5" />
           </button>
 
-          <div className="absolute top-3 left-3 flex flex-wrap gap-2">
+          {/* Left Arrow Scroller for photo switching */}
+          {galleryList.length > 1 && (
+            <button
+              type="button"
+              onClick={handlePrevImage}
+              aria-label="Previous Photo"
+              title="Previous photo"
+              className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-black/75 hover:bg-[#f1683a] text-white flex items-center justify-center transition-all duration-200 border border-white/25 hover:border-[#f1683a] shadow-xl hover:scale-110 z-20 cursor-pointer"
+            >
+              <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6" />
+            </button>
+          )}
+
+          {/* Right Arrow Scroller for photo switching */}
+          {galleryList.length > 1 && (
+            <button
+              type="button"
+              onClick={handleNextImage}
+              aria-label="Next Photo"
+              title="Next photo"
+              className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-black/75 hover:bg-[#f1683a] text-white flex items-center justify-center transition-all duration-200 border border-white/25 hover:border-[#f1683a] shadow-xl hover:scale-110 z-20 cursor-pointer"
+            >
+              <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6" />
+            </button>
+          )}
+
+          {/* Badges on Top Left */}
+          <div className="absolute top-3 left-3 flex flex-wrap gap-2 z-10">
             <span className="px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full text-[10px] sm:text-xs font-bold bg-amber-500 text-slate-950 shadow-sm">
               {tour.badge || tour.category}
             </span>
@@ -115,9 +157,15 @@ export const TourDetailModal: React.FC<TourDetailModalProps> = ({ tour, onClose 
                 Only {availableSeats} Seats Left!
               </span>
             )}
+            {galleryList.length > 1 && (
+              <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-black/60 text-slate-200 backdrop-blur-md border border-white/10">
+                {currentImageIndex + 1} / {galleryList.length} Photos
+              </span>
+            )}
           </div>
 
-          <div className="absolute bottom-3 left-3 right-3 sm:left-5 sm:right-5">
+          {/* Title & Info on Bottom of Photo Banner */}
+          <div className="absolute bottom-3 left-3 right-3 sm:left-5 sm:right-5 z-10">
             <h2 className="font-serif text-lg sm:text-2xl font-bold text-white drop-shadow-md">
               {tour.title}
             </h2>
@@ -133,78 +181,59 @@ export const TourDetailModal: React.FC<TourDetailModalProps> = ({ tour, onClose 
         {/* Scrollable body */}
         <div className="p-4 sm:p-6 overflow-y-auto space-y-5 flex-1 text-xs sm:text-sm">
           
-          {/* Media Switcher Tabs: Photos & Videos */}
-          <div className="p-3.5 rounded-xl bg-slate-900/90 border border-slate-800 space-y-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => setActiveMediaTab('photos')}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition ${
-                    activeMediaTab === 'photos'
-                      ? 'bg-amber-500 text-slate-950 shadow-sm'
-                      : 'bg-slate-800 text-slate-300 hover:text-white'
-                  }`}
-                >
-                  <ImageIcon className="w-3.5 h-3.5" />
-                  <span>Photos ({galleryList.length})</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => setActiveMediaTab('video')}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition ${
-                    activeMediaTab === 'video'
-                      ? 'bg-[#f1683a] text-white shadow-sm'
-                      : 'bg-slate-800 text-slate-300 hover:text-white'
-                  }`}
-                >
-                  <Video className="w-3.5 h-3.5" />
-                  <span>Video Preview (वीडियो)</span>
-                </button>
-              </div>
-
-              <span className="text-[11px] text-slate-400 hidden sm:inline">
-                Click any thumbnail to preview
-              </span>
-            </div>
-
-            {activeMediaTab === 'photos' ? (
-              <div className="grid grid-cols-4 sm:grid-cols-6 gap-2">
-                {galleryList.map((imgUrl, idx) => (
+          {/* Optional Video Preview Switcher */}
+          {tour.videoUrl && (
+            <div className="p-3.5 rounded-xl bg-slate-900/90 border border-slate-800 space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
                   <button
-                    key={idx}
                     type="button"
-                    onClick={() => setSelectedGalleryImg(imgUrl)}
-                    className={`relative aspect-video rounded-lg overflow-hidden border-2 transition ${
-                      selectedGalleryImg === imgUrl
-                        ? 'border-amber-400 ring-2 ring-amber-400/40'
-                        : 'border-slate-800 opacity-70 hover:opacity-100'
+                    onClick={() => setActiveMediaTab('photos')}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition ${
+                      activeMediaTab === 'photos'
+                        ? 'bg-amber-500 text-slate-950 shadow-sm'
+                        : 'bg-slate-800 text-slate-300 hover:text-white'
                     }`}
                   >
-                    <img src={imgUrl} alt={`Gallery ${idx + 1}`} className="w-full h-full object-cover" />
+                    <ImageIcon className="w-3.5 h-3.5" />
+                    <span>Photos View</span>
                   </button>
-                ))}
+
+                  <button
+                    type="button"
+                    onClick={() => setActiveMediaTab('video')}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition ${
+                      activeMediaTab === 'video'
+                        ? 'bg-[#f1683a] text-white shadow-sm'
+                        : 'bg-slate-800 text-slate-300 hover:text-white'
+                    }`}
+                  >
+                    <Video className="w-3.5 h-3.5" />
+                    <span>Watch Video Tour (वीडियो)</span>
+                  </button>
+                </div>
               </div>
-            ) : (
-              <div className="rounded-xl overflow-hidden aspect-video bg-black/90 border border-slate-800 relative">
-                {embedUrl ? (
-                  <iframe
-                    src={embedUrl}
-                    title={`${tour.title} Video Preview`}
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
-                    className="w-full h-full border-0"
-                  />
-                ) : (
-                  <div className="w-full h-full flex flex-col items-center justify-center text-slate-400 gap-2">
-                    <Video className="w-8 h-8 text-[#f1683a]" />
-                    <span>Video tour available on WhatsApp inquiry</span>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
+
+              {activeMediaTab === 'video' && (
+                <div className="rounded-xl overflow-hidden aspect-video bg-black/90 border border-slate-800 relative">
+                  {embedUrl ? (
+                    <iframe
+                      src={embedUrl}
+                      title={`${tour.title} Video Preview`}
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                      className="w-full h-full border-0"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex flex-col items-center justify-center text-slate-400 gap-2">
+                      <Video className="w-8 h-8 text-[#f1683a]" />
+                      <span>Video tour available on WhatsApp inquiry</span>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Price Bar */}
           <div className="p-3.5 sm:p-4 rounded-xl bg-slate-900/90 border border-amber-500/20 flex flex-wrap items-center justify-between gap-3">
@@ -231,126 +260,119 @@ export const TourDetailModal: React.FC<TourDetailModalProps> = ({ tour, onClose 
             </div>
           </div>
 
-          {/* Description */}
+          {/* Places Covered Route Strip */}
           <div>
-            <h3 className="font-serif text-sm font-bold uppercase tracking-wider text-amber-400 mb-1.5">
-              Tour Overview & Experience (विस्तृत विवरण)
-            </h3>
-            <p className="text-slate-300 leading-relaxed text-xs sm:text-sm bg-slate-900/50 p-3.5 rounded-xl border border-slate-800">
-              {tour.description}
-            </p>
-          </div>
-
-          {/* Day-by-Day Itinerary (दिनवार कार्यक्रम) */}
-          {tour.itinerary && tour.itinerary.length > 0 && (
-            <div>
-              <h3 className="font-serif text-sm font-bold uppercase tracking-wider text-amber-400 mb-2.5 flex items-center gap-2">
-                <Clock className="w-4 h-4 text-amber-400" />
-                <span>Day-by-Day Tour Schedule (दिनवार यात्रा कार्यक्रम)</span>
-              </h3>
-              <div className="space-y-2">
-                {tour.itinerary.map((step) => (
-                  <div key={step.day} className="p-3 rounded-xl bg-slate-900/80 border border-slate-800 flex items-start gap-3">
-                    <span className="px-2.5 py-1 rounded-lg bg-amber-500/20 border border-amber-500/40 text-amber-300 font-bold text-xs shrink-0">
-                      Day {step.day}
-                    </span>
-                    <div className="space-y-0.5">
-                      <h4 className="text-white font-bold text-xs">{step.title}</h4>
-                      <p className="text-slate-400 text-[11px] leading-relaxed">{step.desc}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Key Stops */}
-          <div>
-            <h3 className="font-serif text-sm font-bold uppercase tracking-wider text-amber-400 mb-2">
-              Places & Temples Covered (दर्शन एवं दर्शनीय स्थल)
-            </h3>
-            <div className="flex flex-wrap gap-2">
-              {places.map((place, i) => (
+            <span className="text-[10px] uppercase tracking-wider text-slate-400 block font-bold mb-2">
+              Route & Darshan Places Covered
+            </span>
+            <div className="flex flex-wrap gap-1.5 sm:gap-2">
+              {places.map((place, idx) => (
                 <span
-                  key={i}
-                  className="px-2.5 py-1 rounded-lg bg-slate-900 border border-slate-700 text-slate-200 text-xs flex items-center gap-1.5"
+                  key={idx}
+                  className="px-2.5 py-1 rounded-md bg-slate-900 border border-slate-800 text-slate-200 text-xs flex items-center gap-1.5"
                 >
-                  <span className="text-amber-400">✦</span>
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#f1683a]" />
                   <span>{place}</span>
                 </span>
               ))}
             </div>
           </div>
 
-          {/* Boarding Info */}
-          <div className="p-3.5 rounded-xl bg-slate-900/60 border border-slate-800 flex items-start gap-2.5 text-xs">
-            <MapPin className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
-            <div>
-              <strong className="text-white">Boarding & Pickup Hubs:</strong>
-              <div className="text-slate-400 mt-0.5">{boarding}</div>
+          {/* Day Wise Itinerary */}
+          {Array.isArray(tour.itinerary) && tour.itinerary.length > 0 && (
+            <div className="space-y-3">
+              <h3 className="font-serif font-bold text-base text-white border-b border-slate-800 pb-2 flex items-center justify-between">
+                <span>Detailed Day-by-Day Schedule</span>
+                <span className="text-xs font-sans text-amber-400 font-semibold">{tour.itinerary.length} Days Itinerary</span>
+              </h3>
+              
+              <div className="space-y-2.5">
+                {tour.itinerary.map((dayItem, idx) => (
+                  <div key={idx} className="p-3 rounded-xl bg-slate-900/60 border border-slate-800 hover:border-amber-500/30 transition">
+                    <div className="flex items-center gap-2 mb-1.5">
+                      <span className="px-2 py-0.5 rounded bg-amber-500/20 text-amber-400 font-bold text-[11px]">
+                        Day {dayItem.day}
+                      </span>
+                      <h4 className="font-bold text-white text-xs sm:text-sm">
+                        {dayItem.title}
+                      </h4>
+                    </div>
+                    <p className="text-slate-400 text-xs leading-relaxed pl-1">
+                      {dayItem.desc}
+                    </p>
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Inclusions & Exclusions */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="p-3.5 sm:p-4 rounded-xl bg-slate-900/80 border border-slate-800 space-y-2">
-              <div className="text-xs font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-1.5">
-                <Check className="w-4 h-4" /> Inclusions
+            {/* Inclusions */}
+            <div className="p-3.5 rounded-xl bg-slate-900/60 border border-emerald-900/30 space-y-2">
+              <div className="flex items-center gap-1.5 text-emerald-400 font-bold text-xs uppercase tracking-wider">
+                <Check className="w-4 h-4" />
+                <span>What Is Included</span>
               </div>
-              <ul className="space-y-1 text-xs text-slate-300">
+              <ul className="space-y-1.5 text-slate-300 text-xs">
                 {inclusions.map((item, idx) => (
-                  <li key={idx} className="flex items-start gap-2">
-                    <span className="text-emerald-400">✓</span>
+                  <li key={idx} className="flex items-start gap-1.5">
+                    <span className="text-emerald-400 font-bold">✓</span>
                     <span>{item}</span>
                   </li>
                 ))}
               </ul>
             </div>
 
-            <div className="p-3.5 sm:p-4 rounded-xl bg-slate-900/80 border border-slate-800 space-y-2">
-              <div className="text-xs font-bold text-rose-400 uppercase tracking-wider flex items-center gap-1.5">
-                <span>✕</span> Exclusions
+            {/* Exclusions */}
+            <div className="p-3.5 rounded-xl bg-slate-900/60 border border-rose-900/30 space-y-2">
+              <div className="flex items-center gap-1.5 text-rose-400 font-bold text-xs uppercase tracking-wider">
+                <X className="w-4 h-4" />
+                <span>Exclusions (Not Included)</span>
               </div>
-              <ul className="space-y-1 text-xs text-slate-300">
+              <ul className="space-y-1.5 text-slate-300 text-xs">
                 {exclusions.map((item, idx) => (
-                  <li key={idx} className="flex items-start gap-2">
-                    <span className="text-rose-400">✕</span>
+                  <li key={idx} className="flex items-start gap-1.5">
+                    <span className="text-rose-400 font-bold">✕</span>
                     <span>{item}</span>
                   </li>
                 ))}
               </ul>
+            </div>
+          </div>
+
+          {/* Boarding Point Info */}
+          <div className="p-3.5 rounded-xl bg-amber-950/20 border border-amber-500/20 text-xs text-amber-200 flex items-start gap-2.5">
+            <Clock className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+            <div>
+              <strong className="block text-white mb-0.5">Boarding & Pickup Hubs:</strong>
+              <span>{boarding}</span>
             </div>
           </div>
 
         </div>
 
-        {/* Footer actions */}
-        <div className="p-3.5 sm:p-4 bg-slate-900 border-t border-slate-800 flex flex-wrap items-center justify-between gap-2.5">
-          <a
-            href={`tel:${SITE_INFO.phone}`}
-            className="flex items-center gap-2 px-3.5 py-2 rounded-lg border border-slate-700 bg-slate-800 text-white text-xs font-bold uppercase tracking-wider hover:bg-slate-700 transition"
-          >
-            <Phone className="w-3.5 h-3.5 text-amber-400" />
-            <span>Call {SITE_INFO.phone}</span>
-          </a>
-
+        {/* Modal Footer CTA */}
+        <div className="p-3.5 sm:p-4 bg-slate-900 border-t border-slate-800 flex flex-wrap items-center justify-between gap-3 shrink-0">
           <div className="flex items-center gap-2">
-            <button
-              onClick={onClose}
-              className="px-3 py-2 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition"
-            >
-              Close
-            </button>
             <a
-              href={whatsappUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn-luxury-primary flex items-center gap-1.5 !px-4 !py-2 text-xs"
+              href={`tel:${SITE_INFO.phone}`}
+              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs transition"
             >
-              <MessageCircle className="w-3.5 h-3.5 fill-slate-950" />
-              <span>Book on WhatsApp</span>
+              <Phone className="w-3.5 h-3.5 text-amber-400" />
+              <span>Call: {SITE_INFO.phone}</span>
             </a>
           </div>
+
+          <a
+            href={whatsappUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-lg bg-[#f1683a] hover:bg-[#d95325] text-white font-bold text-xs uppercase tracking-wider transition shadow-lg shadow-[#f1683a]/30 cursor-pointer"
+          >
+            <MessageCircle className="w-4 h-4" />
+            <span>Book Seat on WhatsApp</span>
+          </a>
         </div>
 
       </div>

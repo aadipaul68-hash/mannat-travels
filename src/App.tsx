@@ -133,7 +133,7 @@ export default function App() {
   const visibleHolidayPackages = holidayPackages.filter((t) => t.status !== 'hidden');
 
   return (
-    <div className={`min-h-screen flex flex-col font-sans selection:bg-[#f1683a] selection:text-white transition-colors duration-300 ${theme === 'light' ? 'light-theme bg-[#F8FAFC] text-slate-800' : 'bg-[#080B11] text-slate-100'}`}>
+    <div className={`min-h-screen w-full max-w-[100vw] overflow-x-clip flex flex-col font-sans selection:bg-[#f1683a] selection:text-white transition-colors duration-300 ${theme === 'light' ? 'light-theme bg-[#F8FAFC] text-slate-800' : 'bg-[#080B11] text-slate-100'}`}>
       
       {/* ✦ Header Glass (Scrolls up naturally with page) ✦ */}
       <header className="header-glass absolute top-0 left-0 w-full z-50 transition-all duration-300">
