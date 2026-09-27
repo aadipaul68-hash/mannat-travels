@@ -1069,7 +1069,12 @@ export default function App() {
       </div>
 
       {/* ✦ Tour Details Modal ✦ */}
-      <TourDetailModal tour={selectedTour} onClose={() => setSelectedTour(null)} />
+      <TourDetailModal
+        tour={selectedTour}
+        theme={theme}
+        onClose={() => setSelectedTour(null)}
+        onOpenQuote={() => setIsQuotePopupOpen(true)}
+      />
 
       {/* ✦ EXACT ADIYOGI POPUP MODAL ("Get free quotes from us !") ✦ */}
       <AdiyogiPopupModal
