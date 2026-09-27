@@ -179,7 +179,7 @@ export default function App() {
           </a>
 
           {/* Desktop Nav */}
-          <nav className="hidden md:flex items-center space-x-6 text-xs sm:text-sm font-semibold tracking-wider uppercase text-slate-300">
+          <nav className="hidden xl:flex items-center space-x-5 text-xs font-semibold tracking-wider uppercase text-slate-300">
             <a href="#hero" className="hover:text-[#f1683a] transition-colors py-1">
               Home
             </a>
@@ -263,11 +263,6 @@ export default function App() {
               <User className="w-3.5 h-3.5 text-amber-400" />
               <span className="hidden lg:inline">Login</span>
             </button>
-
-            <a href={`tel:${SITE_INFO.phone}`} className="btn-luxury-primary py-2 px-3 text-xs">
-              <Phone className="w-3 h-3 stroke-[2.5]" />
-              <span>{SITE_INFO.phone}</span>
-            </a>
           </div>
 
           {/* Header Action Buttons (Mobile - Upper Right) */}
