@@ -18,7 +18,7 @@ import {
   Menu,
   ChevronRight as ArrowRightIcon
 } from 'lucide-react';
-import { TourItem, SITE_INFO, getWhatsAppBookingUrl } from '../data/mannatData';
+import { TourItem, SITE_INFO, getWhatsAppBookingUrl, getDestinationImage } from '../data/mannatData';
 
 interface TourDetailModalProps {
   tour: TourItem | null;
@@ -62,8 +62,10 @@ export const TourDetailModal: React.FC<TourDetailModalProps> = ({
 
   const galleryList: string[] = tour
     ? Array.isArray(tour.galleryImages) && tour.galleryImages.length > 0
-      ? tour.galleryImages
-      : [tour.image, '/images/kaichi-dham.jpg', '/images/ayodhya-banner.jpg']
+      ? tour.galleryImages.filter(Boolean)
+      : tour.image
+      ? [tour.image]
+      : []
     : [];
 
   const handleTouchStart = (e: React.TouchEvent) => {
@@ -604,6 +606,12 @@ export const TourDetailModal: React.FC<TourDetailModalProps> = ({
               src={currentDisplayImage}
               alt={tour.title}
               className="w-full h-full object-cover transition-all duration-300"
+              onError={(e) => {
+                const fallback = getDestinationImage(tour.title + ' ' + (tour.destination || ''));
+                if (e.currentTarget.src !== fallback) {
+                  e.currentTarget.src = fallback;
+                }
+              }}
             />
 
             {/* Left Arrow Button (Matching Holidify circular white icon) */}

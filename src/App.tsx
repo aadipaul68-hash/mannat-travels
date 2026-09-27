@@ -37,27 +37,31 @@ import {
   TourItem,
   getWhatsAppBookingUrl,
   getGeneralWhatsAppUrl,
+  ensureTourHasValidImages,
+  getDestinationImage,
 } from './data/mannatData';
 
-const POPULAR_STORAGE_KEY = 'mannat_popular_tours_v1';
-const BUS_STORAGE_KEY = 'mannat_bus_tours_v1';
-const HOLIDAY_STORAGE_KEY = 'mannat_holiday_packages_v1';
+const POPULAR_STORAGE_KEY = 'mannat_popular_tours_v2';
+const BUS_STORAGE_KEY = 'mannat_bus_tours_v2';
+const HOLIDAY_STORAGE_KEY = 'mannat_holiday_packages_v2';
 
 export default function App() {
   // Manage state with LocalStorage persistence so additions/deletions/hide persist!
-  // Safely deduplicate by id to avoid any duplicate key React warnings from previously stored data
+  // Safely deduplicate by id and ensure every single package has authentic destination images
   const [popularTours, setPopularTours] = useState<TourItem[]>(() => {
     try {
       const saved = localStorage.getItem(POPULAR_STORAGE_KEY);
       const rawList: TourItem[] = saved ? JSON.parse(saved) : POPULAR_TOURS_DEFAULT;
       const seen = new Set<string>();
-      return rawList.filter((item) => {
-        if (!item || !item.id || seen.has(item.id)) return false;
-        seen.add(item.id);
-        return true;
-      });
+      return rawList
+        .filter((item) => {
+          if (!item || !item.id || seen.has(item.id)) return false;
+          seen.add(item.id);
+          return true;
+        })
+        .map(ensureTourHasValidImages);
     } catch {
-      return POPULAR_TOURS_DEFAULT;
+      return POPULAR_TOURS_DEFAULT.map(ensureTourHasValidImages);
     }
   });
 
@@ -66,13 +70,15 @@ export default function App() {
       const saved = localStorage.getItem(BUS_STORAGE_KEY);
       const rawList: TourItem[] = saved ? JSON.parse(saved) : BUS_TOURS;
       const seen = new Set<string>();
-      return rawList.filter((item) => {
-        if (!item || !item.id || seen.has(item.id)) return false;
-        seen.add(item.id);
-        return true;
-      });
+      return rawList
+        .filter((item) => {
+          if (!item || !item.id || seen.has(item.id)) return false;
+          seen.add(item.id);
+          return true;
+        })
+        .map(ensureTourHasValidImages);
     } catch {
-      return BUS_TOURS;
+      return BUS_TOURS.map(ensureTourHasValidImages);
     }
   });
 
@@ -81,13 +87,15 @@ export default function App() {
       const saved = localStorage.getItem(HOLIDAY_STORAGE_KEY);
       const rawList: TourItem[] = saved ? JSON.parse(saved) : HOLIDAY_PACKAGES;
       const seen = new Set<string>();
-      return rawList.filter((item) => {
-        if (!item || !item.id || seen.has(item.id)) return false;
-        seen.add(item.id);
-        return true;
-      });
+      return rawList
+        .filter((item) => {
+          if (!item || !item.id || seen.has(item.id)) return false;
+          seen.add(item.id);
+          return true;
+        })
+        .map(ensureTourHasValidImages);
     } catch {
-      return HOLIDAY_PACKAGES;
+      return HOLIDAY_PACKAGES.map(ensureTourHasValidImages);
     }
   });
 
@@ -357,6 +365,12 @@ export default function App() {
                       src={tour.image}
                       alt={tour.title}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      onError={(e) => {
+                        const fallback = getDestinationImage(tour.title + ' ' + (tour.destination || ''));
+                        if (e.currentTarget.src !== fallback) {
+                          e.currentTarget.src = fallback;
+                        }
+                      }}
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-[#0E1422] via-transparent to-black/20 pointer-events-none" />
                     <div className="absolute top-2 left-2 bg-black/80 backdrop-blur-md px-1.5 py-0.5 rounded text-[9px] sm:text-[11px] font-semibold tracking-wider uppercase text-amber-300 border border-amber-500/30">
@@ -484,6 +498,12 @@ export default function App() {
                         src={tour.image}
                         alt={tour.title}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        onError={(e) => {
+                          const fallback = getDestinationImage(tour.title + ' ' + (tour.destination || ''));
+                          if (e.currentTarget.src !== fallback) {
+                            e.currentTarget.src = fallback;
+                          }
+                        }}
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-[#0E1422] via-transparent to-black/20" />
                       <div className="absolute top-2 left-2 bg-[#f1683a] text-white font-bold px-1.5 py-0.5 rounded text-[9px] sm:text-[11px]">
@@ -594,52 +614,82 @@ export default function App() {
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-6">
             {visibleHolidayPackages.map((pkg) => {
               const whatsappUrl = `https://wa.me/${SITE_INFO.whatsappRaw}?text=${encodeURIComponent(
                 pkg.whatsappText || `Namaste Mannat Travels, mujhe ${pkg.title} package book karna hai.`
               )}`;
               return (
-                <div key={pkg.id} className="luxury-card flex flex-col justify-between p-3.5 sm:p-5 space-y-2.5 sm:space-y-4">
-                  <div className="space-y-1.5 sm:space-y-3">
-                    <div className="flex items-center justify-between text-xs">
-                      <span className="text-amber-400 font-bold px-1.5 py-0.5 rounded bg-amber-500/10 border border-amber-500/30 text-[10px] sm:text-xs">
-                        {pkg.badge || pkg.category}
-                      </span>
-                      <span className="text-slate-400 font-mono text-[10px] sm:text-[11px]">{pkg.duration}</span>
+                <div key={pkg.id} className="luxury-card flex flex-row sm:flex-col group overflow-hidden sm:h-auto">
+                  {/* Destination Image Banner */}
+                  <div
+                    className="relative w-36 sm:w-full h-full sm:aspect-[16/10] shrink-0 overflow-hidden bg-slate-900 cursor-pointer"
+                    onClick={() => setSelectedTour(pkg)}
+                  >
+                    <img
+                      src={pkg.image}
+                      alt={pkg.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      onError={(e) => {
+                        const fallback = getDestinationImage(pkg.title + ' ' + (pkg.destination || ''));
+                        if (e.currentTarget.src !== fallback) {
+                          e.currentTarget.src = fallback;
+                        }
+                      }}
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#0E1422] via-transparent to-black/20" />
+                    <div className="absolute top-2 left-2 bg-[#f1683a] text-white font-bold px-1.5 py-0.5 rounded text-[9px] sm:text-[11px]">
+                      {pkg.badge || pkg.category}
                     </div>
-
-                    <h3 className="font-serif text-sm sm:text-base font-bold text-white leading-snug line-clamp-1">
-                      {pkg.title}
-                    </h3>
-
-                    <p className="hidden sm:block text-xs text-slate-400 line-clamp-2">
-                      {pkg.description}
-                    </p>
-
-                    <div className="p-1.5 sm:p-2.5 rounded-lg bg-slate-900 text-[10px] sm:text-[11px] text-slate-300 space-y-0.5 sm:space-y-1">
-                      <div className="truncate"><strong className="text-slate-400">Route:</strong> {pkg.route}</div>
-                      <div><strong className="text-slate-400">Vehicle:</strong> {pkg.vehicle}</div>
+                    <div className="absolute bottom-1.5 left-1.5 text-[9px] sm:text-xs text-slate-300 flex items-center gap-1 bg-black/70 px-1.5 py-0.5 rounded backdrop-blur-xs">
+                      <Clock className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 text-[#f1683a]" />
+                      <span>{pkg.duration}</span>
                     </div>
                   </div>
 
-                  <div className="pt-2 sm:pt-3 border-t border-slate-800 flex items-center justify-between">
+                  <div className="p-2.5 sm:p-5 flex-1 flex flex-col justify-between space-y-2 sm:space-y-4">
                     <div>
-                      <span className="hidden sm:block text-[10px] text-slate-500">Package Rate</span>
-                      <div className="text-sm sm:text-base font-bold text-amber-400">
-                        ₹{pkg.price.toLocaleString('en-IN')} <span className="text-[9px] sm:text-[10px] text-slate-400 font-normal">/ person</span>
+                      <h3
+                        onClick={() => setSelectedTour(pkg)}
+                        className="font-serif text-xs sm:text-base font-bold text-white group-hover:text-amber-300 transition-colors cursor-pointer line-clamp-1 leading-snug"
+                      >
+                        {pkg.title}
+                      </h3>
+                      <p className="hidden sm:block text-xs text-slate-400 line-clamp-2 mt-1">
+                        {pkg.description}
+                      </p>
+                      <div className="mt-2 text-[10px] sm:text-xs text-slate-300 space-y-0.5">
+                        <div className="truncate"><strong className="text-slate-400">Route:</strong> {pkg.route}</div>
                       </div>
                     </div>
 
-                    <a
-                      href={whatsappUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="px-2.5 py-1 sm:px-3 sm:py-1.5 bg-[#f1683a] hover:bg-[#d95325] text-white font-bold text-[11px] sm:text-xs rounded transition flex items-center gap-1 active:scale-95"
-                    >
-                      <span>Inquire</span>
-                      <ArrowRight className="w-3 h-3" />
-                    </a>
+                    <div className="pt-2 sm:pt-3 border-t border-slate-800 flex items-center justify-between">
+                      <div>
+                        <span className="hidden sm:block text-[10px] text-slate-500">Package Rate</span>
+                        <div className="text-sm sm:text-base font-bold text-amber-400">
+                          ₹{pkg.price.toLocaleString('en-IN')} <span className="text-[9px] sm:text-[10px] text-slate-400 font-normal">/ person</span>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-1.5 sm:gap-2">
+                        <button
+                          type="button"
+                          onClick={() => setSelectedTour(pkg)}
+                          className="px-2 py-1 sm:px-3 sm:py-1.5 bg-slate-800 hover:bg-slate-700 text-white rounded text-[10px] sm:text-xs font-semibold cursor-pointer"
+                        >
+                          Info
+                        </button>
+                        <a
+                          href={whatsappUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="px-2.5 py-1 sm:px-3 sm:py-1.5 bg-[#f1683a] hover:bg-[#d95325] text-white font-bold text-[10px] sm:text-xs rounded transition flex items-center gap-1 active:scale-95"
+                        >
+                          <span>Book</span>
+                          <ArrowRight className="w-3 h-3" />
+                        </a>
+                      </div>
+                    </div>
                   </div>
                 </div>
               );

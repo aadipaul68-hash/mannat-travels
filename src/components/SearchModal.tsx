@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Search, X, MapPin, ArrowRight, Sparkles, Clock, Compass } from 'lucide-react';
-import { TourItem } from '../data/mannatData';
+import { TourItem, getDestinationImage } from '../data/mannatData';
 
 interface SearchModalProps {
   isOpen: boolean;
@@ -190,6 +190,12 @@ export const SearchModal: React.FC<SearchModalProps> = ({
                         src={tour.image}
                         alt={tour.title}
                         className="w-14 h-14 sm:w-16 sm:h-16 rounded-lg object-cover shrink-0"
+                        onError={(e) => {
+                          const fallback = getDestinationImage(tour.title + ' ' + (tour.destination || ''));
+                          if (e.currentTarget.src !== fallback) {
+                            e.currentTarget.src = fallback;
+                          }
+                        }}
                       />
                       <div className="min-w-0">
                         <div className="flex items-center gap-2">
@@ -271,6 +277,12 @@ export const SearchModal: React.FC<SearchModalProps> = ({
                       src={tour.image}
                       alt={tour.title}
                       className="w-12 h-12 rounded-lg object-cover shrink-0"
+                      onError={(e) => {
+                        const fallback = getDestinationImage(tour.title + ' ' + (tour.destination || ''));
+                        if (e.currentTarget.src !== fallback) {
+                          e.currentTarget.src = fallback;
+                        }
+                      }}
                     />
                     <div className="min-w-0 flex-1">
                       <div className="font-bold text-xs truncate group-hover:text-amber-400 transition-colors">

@@ -1,6 +1,7 @@
 /**
  * Mannat Tour and Travels (mannattourandtravels.com / mannat-travels.vercel.app)
  * Local and authentic image assets for all destinations
+ * Guaranteed: Every package has an authentic destination image and matching gallery.
  */
 
 export interface TourItem {
@@ -50,7 +51,117 @@ export const SITE_INFO = {
   website: 'https://mannattourandtravels.com',
 };
 
-// Exact Spiritual Bus Tours with local assets
+/**
+ * Intelligent Destination Image Resolver
+ * Ensures ANY package (even newly created in admin or saved in old localStorage)
+ * always gets its authentic, high-quality destination photo!
+ */
+export function getDestinationImage(destinationOrTitle: string = ''): string {
+  const s = destinationOrTitle.toLowerCase();
+  if (s.includes('kedarnath')) return '/images/kedarnath.jpg';
+  if (s.includes('badrinath')) return '/images/badrinath.jpg';
+  if (s.includes('kainchi') || s.includes('kaichi') || s.includes('neem karoli')) return '/images/kaichi-dham.jpg';
+  if (s.includes('nainital')) return '/images/nainital.jpg';
+  if (s.includes('ayodhya') || s.includes('ram mandir')) return '/images/ayodhya-banner.jpg';
+  if (s.includes('kashi') || s.includes('varanasi')) return '/images/kashi-varanasi.jpg';
+  if (s.includes('manali') || s.includes('solang')) return '/images/manali.jpg';
+  if (s.includes('shimla') || s.includes('kufri')) return '/images/shimla.jpg';
+  if (s.includes('mussoorie') || s.includes('kempty')) return '/images/mussoorie.jpg';
+  if (s.includes('kashmir') || s.includes('srinagar') || s.includes('gulmarg')) return '/images/kashmir.jpg';
+  if (s.includes('haridwar')) return '/images/haridwar.jpg';
+  if (s.includes('rishikesh')) return '/images/rishikesh.jpg';
+  if (s.includes('vrindavan') || s.includes('mathura') || s.includes('barsana') || s.includes('braj')) return '/images/vrindavan.jpg';
+  if (s.includes('vaishno') || s.includes('katra')) return '/images/vaishno-devi.jpg';
+  if (s.includes('amritsar') || s.includes('golden temple')) return '/images/amritsar.jpg';
+  if (s.includes('khatu') || s.includes('salasar')) return '/images/khatu-shyam.jpg';
+  if (s.includes('jaipur')) return '/images/jaipur.jpg';
+  if (s.includes('agra') || s.includes('taj')) return '/images/agra-taj.jpg';
+  if (s.includes('goa')) return '/images/goa.jpg';
+  if (s.includes('corbett') || s.includes('ramnagar') || s.includes('girija')) return '/images/kaichi-dham.jpg';
+  if (s.includes('kasol') || s.includes('parvati')) return '/images/kasol.jpg';
+  if (s.includes('chardham') || s.includes('char dham') || s.includes('gangotri') || s.includes('yamunotri')) return '/images/chardham.jpg';
+  return '/images/chardham.jpg';
+}
+
+/**
+ * Intelligent Destination Gallery Resolver
+ * Provides 2-4 authentic destination-specific images for each package gallery
+ */
+export function getDestinationGallery(destinationOrTitle: string = '', mainImage?: string): string[] {
+  const s = destinationOrTitle.toLowerCase();
+  const list: string[] = [];
+
+  if (s.includes('kedarnath') || s.includes('badrinath') || s.includes('chardham') || s.includes('char dham')) {
+    list.push('/images/kedarnath.jpg', '/images/badrinath.jpg', '/images/chardham.jpg', '/images/gangotri.jpg', '/images/yamunotri.jpg');
+  } else if (s.includes('kainchi') || s.includes('kaichi') || s.includes('nainital')) {
+    list.push('/images/kaichi-dham.jpg', '/images/nainital.jpg', '/images/corbett.jpg');
+  } else if (s.includes('ayodhya') || s.includes('kashi') || s.includes('varanasi')) {
+    list.push('/images/ayodhya-banner.jpg', '/images/kashi-varanasi.jpg', '/images/haridwar.jpg');
+  } else if (s.includes('manali') || s.includes('kasol') || s.includes('shimla')) {
+    list.push('/images/manali.jpg', '/images/shimla.jpg', '/images/kasol.jpg');
+  } else if (s.includes('mussoorie') || s.includes('haridwar') || s.includes('rishikesh')) {
+    list.push('/images/mussoorie.jpg', '/images/haridwar.jpg', '/images/rishikesh.jpg');
+  } else if (s.includes('kashmir') || s.includes('srinagar') || s.includes('gulmarg')) {
+    list.push('/images/kashmir.jpg', '/images/dal-lake.jpg', '/images/gulmarg.jpg');
+  } else if (s.includes('jaipur') || s.includes('agra') || s.includes('taj')) {
+    list.push('/images/jaipur.jpg', '/images/agra-taj.jpg');
+  } else if (s.includes('vrindavan') || s.includes('mathura')) {
+    list.push('/images/vrindavan.jpg', '/images/agra-taj.jpg');
+  } else if (s.includes('vaishno') || s.includes('katra')) {
+    list.push('/images/vaishno-devi.jpg', '/images/amritsar.jpg');
+  } else if (s.includes('amritsar')) {
+    list.push('/images/amritsar.jpg');
+  } else if (s.includes('khatu')) {
+    list.push('/images/khatu-shyam.jpg', '/images/jaipur.jpg');
+  } else if (s.includes('goa')) {
+    list.push('/images/goa.jpg');
+  } else if (mainImage) {
+    list.push(mainImage);
+  }
+
+  // Deduplicate and ensure mainImage is first
+  const set = new Set<string>();
+  if (mainImage) set.add(mainImage);
+  for (const img of list) {
+    if (img) set.add(img);
+  }
+  return Array.from(set);
+}
+
+/**
+ * Ensures every single tour object has a valid, non-empty, destination-matching image & gallery.
+ */
+export function ensureTourHasValidImages(tour: TourItem): TourItem {
+  if (!tour) return tour;
+  const destinationOrTitle = `${tour.title || ''} ${tour.destination || ''} ${tour.route || ''}`;
+  
+  let validImage = tour.image && typeof tour.image === 'string' && tour.image.trim() !== ''
+    ? tour.image
+    : getDestinationImage(destinationOrTitle);
+
+  // If previous image was invalid or broken placeholder, fix it
+  if (validImage === '/images/nainital.jpg' || !validImage.startsWith('/images/')) {
+    validImage = getDestinationImage(destinationOrTitle);
+  }
+
+  // Ensure gallery matches destination
+  let gallery = Array.isArray(tour.galleryImages) && tour.galleryImages.length > 0
+    ? tour.galleryImages.filter((img) => img && typeof img === 'string')
+    : getDestinationGallery(destinationOrTitle, validImage);
+
+  // Filter out any stale generic fallbacks that got injected previously
+  if (gallery.length === 0) {
+    gallery = getDestinationGallery(destinationOrTitle, validImage);
+  }
+
+  return {
+    ...tour,
+    image: validImage,
+    galleryImages: gallery,
+  };
+}
+
+// ✦ Exact Spiritual Bus Tours with 100% Authentic Destination Assets ✦
 export const BUS_TOURS: TourItem[] = [
   {
     id: 'tour-girija-devi-hanuman-kainchi',
@@ -79,7 +190,7 @@ export const BUS_TOURS: TourItem[] = [
     galleryImages: [
       '/images/kaichi-dham.jpg',
       '/images/nainital.jpg',
-      '/images/haridwar.jpg'
+      '/images/corbett.jpg'
     ],
     videoUrl: 'https://www.youtube.com/watch?v=0hE1rDcf7iI',
     status: 'active',
@@ -121,7 +232,7 @@ export const BUS_TOURS: TourItem[] = [
     image: '/images/ayodhya-banner.jpg',
     galleryImages: [
       '/images/ayodhya-banner.jpg',
-      '/images/vrindavan.jpg',
+      '/images/kashi-varanasi.jpg',
       '/images/haridwar.jpg'
     ],
     videoUrl: 'https://www.youtube.com/watch?v=F0Z7mYmE1gY',
@@ -164,8 +275,7 @@ export const BUS_TOURS: TourItem[] = [
     image: '/images/vaishno-devi.jpg',
     galleryImages: [
       '/images/vaishno-devi.jpg',
-      '/images/haridwar.jpg',
-      '/images/rishikesh.jpg'
+      '/images/amritsar.jpg'
     ],
     status: 'active',
     badge: 'Navratri Special',
@@ -230,18 +340,49 @@ export const BUS_TOURS: TourItem[] = [
     image: '/images/vrindavan.jpg',
     galleryImages: [
       '/images/vrindavan.jpg',
-      '/images/ayodhya-banner.jpg',
-      '/images/haridwar.jpg'
+      '/images/agra-taj.jpg'
     ],
     status: 'active',
     badge: 'Devotional',
     description: 'Immerse in Krishna bhakti: Shri Krishna Janmabhoomi, Bankey Bihari Ji, breathtaking musical fountains & lights at Prem Mandir, and Radha Rani Temple Barsana.',
     whatsappText: 'Namaste Mannat Tours, mujhe Mathura Vrindavan 2 Days Bus Tour (₹2,199) book karna hai.'
+  },
+  {
+    id: 'tour-khatu-shyam-salasar-bus',
+    title: 'Shri Khatu Shyam Ji & Salasar Balaji Yatra',
+    category: 'Spiritual Yatras',
+    destination: 'Rajasthan (Khatu Dham & Salasar)',
+    route: 'Muzaffarnagar - Meerut - Delhi Bypass - Ringas - Khatu Shyam - Salasar',
+    busType: 'Deluxe 2x2 AC Bus',
+    departureDate: 'Every Saturday Evening',
+    returnDate: 'Monday Morning',
+    duration: '1 Night / 2 Days',
+    price: 1999,
+    advanceAmount: 700,
+    availableSeats: 18,
+    totalSeats: 40,
+    boardingPoints: 'Muzaffarnagar Central Stand, Khatauli, Meerut Bypass, Delhi Kashmiri Gate',
+    foodIncluded: true,
+    inclusions: [
+      'Deluxe AC 2x2 Coach Travel',
+      'Hotel/Dharmshala Stay in Khatu',
+      'Pure Satvik Vegetarian Meals',
+      'Darshan Assistance at Khatu Shyam & Salasar Balaji'
+    ],
+    image: '/images/khatu-shyam.jpg',
+    galleryImages: [
+      '/images/khatu-shyam.jpg',
+      '/images/jaipur.jpg'
+    ],
+    status: 'active',
+    badge: 'Hare Ka Sahara',
+    description: 'Divine weekend pilgrimage to "Hare Ka Sahara" Baba Shyam Ji temple in Sikar and powerful Siddhapeeth Salasar Balaji Dham with comfortable AC travel and food.',
+    whatsappText: 'Namaste Mannat Tours, mujhe Khatu Shyam Ji & Salasar Balaji Bus Tour (₹1,999) book karna hai.'
   }
 ];
 
-// Exact Holiday Packages with local assets
-export const HOLIDAY_PACKAGES = [
+// ✦ Exact Holiday Packages with 100% Authentic Destination Assets ✦
+export const HOLIDAY_PACKAGES: TourItem[] = [
   {
     id: 'kaichi-dham-nainital',
     title: 'Kaichi Dham & Nainital Special Package',
@@ -253,6 +394,11 @@ export const HOLIDAY_PACKAGES = [
     route: 'Muzaffarnagar / Delhi - Nainital - Kainchi Dham',
     inclusions: ['Cab / Bus Transport', 'Hotel Stay', 'Sightseeing', 'Toll & Parking'],
     image: '/images/kaichi-dham.jpg',
+    galleryImages: [
+      '/images/kaichi-dham.jpg',
+      '/images/nainital.jpg',
+      '/images/corbett.jpg'
+    ],
     whatsappText: 'Namaste Mannat Travels, mujhe Kaichi Dham 3 Days Package customize/book karna hai.',
     badge: 'Bestseller',
     description: 'Experience divine darshan at revered Neem Karoli Baba Ashram (Kainchi Dham) combined with scenic sightseeing around Naini Lake, Bhimtal, and hill viewpoints.'
@@ -268,13 +414,20 @@ export const HOLIDAY_PACKAGES = [
     route: 'Haridwar - Yamunotri - Gangotri - Kedarnath - Badrinath',
     inclusions: ['Stay & Meals', 'Deluxe Transport', 'Darshan Assistance', 'Tolls & Permits'],
     image: '/images/chardham.jpg',
+    galleryImages: [
+      '/images/chardham.jpg',
+      '/images/kedarnath.jpg',
+      '/images/badrinath.jpg',
+      '/images/gangotri.jpg',
+      '/images/yamunotri.jpg'
+    ],
     whatsappText: 'Namaste Mannat Travels, mujhe Chardham Yatra Package ki details chahiye.',
     badge: 'Most Sacred',
     description: 'The ultimate sacred pilgrimage to all four holy shrines of Uttarakhand: Yamunotri, Gangotri, Kedarnath Jyotirlinga, and Badrinath Dham with pure satvik food and experienced coordinators.'
   },
   {
     id: 'ayodhya-kashi-prayag',
-    title: 'Triveni & Kashi Vishwanath Darshan',
+    title: 'Triveni, Ayodhya & Kashi Vishwanath Darshan',
     category: 'Spiritual Packages',
     duration: '5 Nights / 6 Days',
     price: 5999,
@@ -283,6 +436,11 @@ export const HOLIDAY_PACKAGES = [
     route: 'Muzaffarnagar - Meerut - Delhi - Ayodhya - Kashi - Prayagraj',
     inclusions: ['Transport', 'Dharmshala/Hotel Stay', 'Guide', 'Triveni Snan Assistance'],
     image: '/images/ayodhya-banner.jpg',
+    galleryImages: [
+      '/images/ayodhya-banner.jpg',
+      '/images/kashi-varanasi.jpg',
+      '/images/haridwar.jpg'
+    ],
     whatsappText: 'Namaste Mannat Travels, mujhe Ayodhya Kashi Package book karna hai.',
     badge: 'Popular Yatra',
     description: 'Divine spiritual circuit covering newly built Bhavya Ram Janmabhoomi Mandir at Ayodhya, sacred holy dip at Triveni Sangam Prayagraj, and Kashi Vishwanath corridor with Ganga Aarti.'
@@ -298,6 +456,11 @@ export const HOLIDAY_PACKAGES = [
     route: 'Muzaffarnagar - Chandigarh - Kullu - Manali - Atal Tunnel - Kasol',
     inclusions: ['Resort Stay with Balcony', 'Breakfast & Dinner', 'Bonfire & Music', 'All Local Sightseeing'],
     image: '/images/manali.jpg',
+    galleryImages: [
+      '/images/manali.jpg',
+      '/images/kasol.jpg',
+      '/images/shimla.jpg'
+    ],
     whatsappText: 'Namaste Mannat Travels, mujhe Manali Solang Valley Holiday Package book karna hai.',
     badge: 'Top Holiday',
     description: 'Snow adventures at Solang Valley and Atal Tunnel, Hadimba Temple, Mall Road shopping, Kullu river rafting, and scenic riverside café experience in Kasol.'
@@ -313,6 +476,11 @@ export const HOLIDAY_PACKAGES = [
     route: 'Srinagar - Dal Lake - Gulmarg Gondola - Pahalgam Betaab Valley',
     inclusions: ['Houseboat Stay + 3-Star Resorts', 'Daily Breakfast & Dinner', 'Shikara Ride on Dal Lake', 'All Transfers & Sightseeing'],
     image: '/images/kashmir.jpg',
+    galleryImages: [
+      '/images/kashmir.jpg',
+      '/images/dal-lake.jpg',
+      '/images/gulmarg.jpg'
+    ],
     whatsappText: 'Namaste Mannat Travels, mujhe Kashmir Paradise Package ki details chahiye.',
     badge: 'Honeymoon & Family',
     description: 'Gliding on Dal Lake in a traditional Shikara, snow-clad mountain views on the Gulmarg Gondola, lush green meadows of Pahalgam, and delicious Kashmiri hospitality.'
@@ -328,6 +496,11 @@ export const HOLIDAY_PACKAGES = [
     route: 'Muzaffarnagar / Delhi - Mathura - Agra - Fatehpur Sikri - Jaipur',
     inclusions: ['Hotel Stay in Agra & Jaipur', 'Breakfast & Dinner', 'All Sightseeing Transfers', 'Tolls & State Taxes'],
     image: '/images/jaipur.jpg',
+    galleryImages: [
+      '/images/jaipur.jpg',
+      '/images/agra-taj.jpg',
+      '/images/vrindavan.jpg'
+    ],
     whatsappText: 'Namaste Mannat Travels, mujhe Jaipur Agra Royal Heritage Package book karna hai.',
     badge: 'Heritage Special',
     description: 'Sunrise visit to the iconic Taj Mahal, grand Agra Fort, historic Fatehpur Sikri, and royal Amber Fort & Hawa Mahal in the Pink City Jaipur.'
@@ -343,6 +516,11 @@ export const HOLIDAY_PACKAGES = [
     route: 'Muzaffarnagar - Haridwar - Rishikesh - Dehradun - Mussoorie',
     inclusions: ['Hotels in Rishikesh & Mussoorie', 'Breakfast & Dinner', 'Ganga Aarti Coordination', 'Local Sightseeing'],
     image: '/images/mussoorie.jpg',
+    galleryImages: [
+      '/images/mussoorie.jpg',
+      '/images/haridwar.jpg',
+      '/images/rishikesh.jpg'
+    ],
     whatsappText: 'Namaste Mannat Travels, mujhe Haridwar Mussoorie Weekend Package book karna hai.',
     badge: 'Weekend Getaway',
     description: 'Holy dip at Har Ki Pauri, magical Triveni Ghat Ganga Aarti, Ram Jhula, and misty cloud views at Mussoorie Mall Road & Kempty Falls.'
@@ -358,13 +536,55 @@ export const HOLIDAY_PACKAGES = [
     route: 'North Goa (Calangute, Baga) - South Goa (Old Goa Churches & Cruise)',
     inclusions: ['Resort Stay with Swimming Pool', 'Daily Buffet Breakfast', 'Mandovi River Sunset Cruise', 'North & South Goa Sightseeing'],
     image: '/images/goa.jpg',
+    galleryImages: [
+      '/images/goa.jpg'
+    ],
     whatsappText: 'Namaste Mannat Travels, mujhe Goa Beach Vacation Package book karna hai.',
     badge: 'Beach Fun',
     description: 'Relax on golden sandy beaches of Calangute and Baga, enjoy water sports, historic Portuguese churches of Old Goa, and an evening Mandovi river music cruise.'
+  },
+  {
+    id: 'kedarnath-chopta-tungnath-trek',
+    title: 'Shri Kedarnath Dham & Chopta Tungnath Trek',
+    category: 'Spiritual Packages',
+    duration: '4 Nights / 5 Days',
+    price: 9999,
+    originalPrice: 12500,
+    vehicle: 'Tempo Traveller / Innova / Dzire',
+    route: 'Haridwar - Rishikesh - Guptkashi - Kedarnath - Chopta Tungnath - Rishikesh',
+    inclusions: ['Mountain Resort & Camp Stay', 'Satvik Meals', 'Trek & Darshan Guidance', 'Medical Kit Support'],
+    image: '/images/kedarnath.jpg',
+    galleryImages: [
+      '/images/kedarnath.jpg',
+      '/images/badrinath.jpg',
+      '/images/chardham.jpg',
+      '/images/rishikesh.jpg'
+    ],
+    whatsappText: 'Namaste Mannat Travels, mujhe Kedarnath & Chopta Tungnath Package book karna hai.',
+    badge: 'Devbhoomi Special',
+    description: 'Divine trek to 11th Jyotirlinga Shri Kedarnath Ji surrounded by snow-covered Himalayan peaks, plus visit to highest Shiva temple Tungnath and Chandrashila in Chopta.'
+  },
+  {
+    id: 'amritsar-golden-temple-package',
+    title: 'Amritsar Golden Temple & Wagah Border Tour',
+    category: 'Spiritual Packages',
+    duration: '2 Nights / 3 Days',
+    price: 3999,
+    originalPrice: 5200,
+    vehicle: 'Deluxe AC Coach / Ertiga / Dzire',
+    route: 'Muzaffarnagar - Ambala - Ludhiana - Jalandhar - Amritsar',
+    inclusions: ['3-Star Hotel Stay near Golden Temple', 'Langar & Buffet Breakfast', 'Wagah Border Patriotic Ceremony VIP Pass', 'Jallianwala Bagh Visit'],
+    image: '/images/amritsar.jpg',
+    galleryImages: [
+      '/images/amritsar.jpg'
+    ],
+    whatsappText: 'Namaste Mannat Travels, mujhe Amritsar Golden Temple Package book karna hai.',
+    badge: 'Sacred & Patriotic',
+    description: 'Spiritual solace at illuminated Harmandir Sahib (Golden Temple), holy amrit sarovar, moving history at Jallianwala Bagh, and electrifying Retreat Ceremony at Wagah Border.'
   }
 ];
 
-// Exact Hero Slider Images
+// ✦ Exact Hero Slider Images ✦
 export const HERO_SLIDES = [
   {
     id: 'shimla-manali',
@@ -380,7 +600,7 @@ export const HERO_SLIDES = [
     label: 'U T T A R A K H A N D   L A K E S',
     title: 'Nainital & Kainchi Dham',
     subtitle: 'Emerald yachting on Naini Lake, holy darshan at Neem Karoli Baba Ashram, and Bhimtal.',
-    image: '/images/kaichi-dham.jpg',
+    image: '/images/nainital.jpg',
     ctaText: 'DISCOVER NAINITAL →',
     ctaLink: '#popular-tours'
   },
@@ -404,7 +624,7 @@ export const HERO_SLIDES = [
   }
 ];
 
-// Popular Tours with local verified images
+// ✦ Popular Tours with 100% Verified Destination Images ✦
 export const POPULAR_TOURS_DEFAULT: TourItem[] = [
   {
     id: 'tour-shimla-manali',
@@ -433,7 +653,7 @@ export const POPULAR_TOURS_DEFAULT: TourItem[] = [
     galleryImages: [
       '/images/manali.jpg',
       '/images/shimla.jpg',
-      '/images/mussoorie.jpg'
+      '/images/kasol.jpg'
     ],
     videoUrl: 'https://www.youtube.com/watch?v=F0Z7mYmE1gY',
     itinerary: [
@@ -473,9 +693,10 @@ export const POPULAR_TOURS_DEFAULT: TourItem[] = [
     image: '/images/chardham.jpg',
     galleryImages: [
       '/images/chardham.jpg',
+      '/images/kedarnath.jpg',
       '/images/badrinath.jpg',
-      '/images/haridwar.jpg',
-      '/images/rishikesh.jpg'
+      '/images/gangotri.jpg',
+      '/images/yamunotri.jpg'
     ],
     videoUrl: 'https://www.youtube.com/watch?v=kYvM-cQ0dGg',
     itinerary: [
@@ -515,7 +736,12 @@ export const POPULAR_TOURS_DEFAULT: TourItem[] = [
       'Pure Satvik Vegetarian Meals (Breakfast & Dinner)',
       'Darshan Assistance & Tour Coordinator Support'
     ],
-    image: '/images/kaichi-dham.jpg',
+    image: '/images/nainital.jpg',
+    galleryImages: [
+      '/images/nainital.jpg',
+      '/images/kaichi-dham.jpg',
+      '/images/corbett.jpg'
+    ],
     status: 'active'
   },
   {
@@ -542,12 +768,90 @@ export const POPULAR_TOURS_DEFAULT: TourItem[] = [
       'All Local Sightseeing, Tolls & Parking Taxes Included'
     ],
     image: '/images/mussoorie.jpg',
+    galleryImages: [
+      '/images/mussoorie.jpg',
+      '/images/rishikesh.jpg',
+      '/images/haridwar.jpg'
+    ],
+    status: 'active'
+  },
+  {
+    id: 'tour-kedarnath-special',
+    title: 'Shri Kedarnath Dham & Chopta Tungnath Yatra',
+    category: 'Spiritual Tours',
+    destination: 'Uttarakhand (Kedarnath & Chopta)',
+    duration: '4 Nights / 5 Days',
+    departureDate: 'Pilgrim Season Batches',
+    price: 11999,
+    originalPrice: 14500,
+    advanceAmount: 3000,
+    availableSeats: 12,
+    totalSeats: 30,
+    boardingLocation: 'Muzaffarnagar, Haridwar & Rishikesh',
+    badge: 'Shiva Supreme',
+    description: 'Holy darshan of Kedarnath Jyotirlinga, surrounded by snow peaks of Kedar dome, combined with highest Shiva shrine Tungnath in scenic Chopta valley.',
+    route: 'Haridwar - Rishikesh - Devprayag - Guptkashi - Kedarnath - Chopta',
+    placesCovered: ['Shri Kedarnath Temple', 'Bhairavnath Mandir', 'Chopta Valley', 'Tungnath Temple', 'Rishikesh Ganga Ghat'],
+    inclusions: [
+      'Dedicated AC Pushback Traveller / Hill Vehicle',
+      'Clean Mountain Lodge / Camp Stay',
+      'Pure Satvik Food & Breakfast',
+      'Yatra Registration & Darshan Support'
+    ],
+    image: '/images/kedarnath.jpg',
+    galleryImages: [
+      '/images/kedarnath.jpg',
+      '/images/badrinath.jpg',
+      '/images/chardham.jpg',
+      '/images/rishikesh.jpg'
+    ],
+    status: 'active'
+  },
+  {
+    id: 'tour-kashmir-paradise',
+    title: 'Jewel of Kashmir: Srinagar, Gulmarg & Pahalgam',
+    category: 'Hill Stations',
+    destination: 'Jammu & Kashmir',
+    duration: '5 Nights / 6 Days',
+    departureDate: 'Every Tuesday & Friday',
+    price: 15499,
+    originalPrice: 18999,
+    advanceAmount: 4000,
+    availableSeats: 10,
+    totalSeats: 25,
+    boardingLocation: 'Muzaffarnagar / Delhi / Jammu',
+    badge: 'Heaven on Earth',
+    description: 'Experience Shikara ride on Dal Lake, snow adventures at Gulmarg Gondola, lush saffron fields of Pampore, and pine forests of Pahalgam.',
+    route: 'Jammu / Srinagar - Dal Lake - Gulmarg - Pahalgam - Betaab Valley',
+    placesCovered: ['Dal Lake Shikara', 'Mughal Gardens', 'Gulmarg Snow Peak', 'Pahalgam Valley', 'Aru Valley'],
+    inclusions: [
+      'Deluxe Houseboat & Mountain Resort Stays',
+      'Daily Breakfast & Dinner',
+      'All Sightseeing in Private Sanitized Cab',
+      'Shikara Boat Cruise Included'
+    ],
+    image: '/images/kashmir.jpg',
+    galleryImages: [
+      '/images/kashmir.jpg',
+      '/images/dal-lake.jpg',
+      '/images/gulmarg.jpg'
+    ],
     status: 'active'
   }
 ];
 
-// Featured Destination cards
+// ✦ Featured Destination cards with 100% verified matching destination images ✦
 export const FEATURED_DESTINATIONS = [
+  {
+    name: 'Kedarnath',
+    state: 'Holy Jyotirlinga',
+    image: '/images/kedarnath.jpg'
+  },
+  {
+    name: 'Nainital',
+    state: 'Lake City & Kainchi',
+    image: '/images/nainital.jpg'
+  },
   {
     name: 'Shimla',
     state: 'Himachal Pradesh',
@@ -559,34 +863,44 @@ export const FEATURED_DESTINATIONS = [
     image: '/images/manali.jpg'
   },
   {
-    name: 'Nainital',
-    state: 'Uttarakhand',
-    image: '/images/kaichi-dham.jpg'
-  },
-  {
     name: 'Mussoorie',
-    state: 'Uttarakhand',
+    state: 'Queen of Hills',
     image: '/images/mussoorie.jpg'
   },
   {
-    name: 'Haridwar',
-    state: 'Ganga Aarti',
-    image: '/images/haridwar.jpg'
+    name: 'Ayodhya & Kashi',
+    state: 'Ram Mandir & Ganga',
+    image: '/images/ayodhya-banner.jpg'
   },
   {
-    name: 'Rishikesh',
-    state: 'Yoga Capital',
-    image: '/images/rishikesh.jpg'
-  },
-  {
-    name: 'Kedarnath',
-    state: 'Holy Jyotirlinga',
-    image: '/images/chardham.jpg'
+    name: 'Kashmir',
+    state: 'Paradise on Earth',
+    image: '/images/kashmir.jpg'
   },
   {
     name: 'Badrinath',
     state: 'Sacred Dham',
     image: '/images/badrinath.jpg'
+  },
+  {
+    name: 'Haridwar & Rishikesh',
+    state: 'Ganga Aarti',
+    image: '/images/haridwar.jpg'
+  },
+  {
+    name: 'Jaipur & Agra',
+    state: 'Royal Heritage & Taj',
+    image: '/images/jaipur.jpg'
+  },
+  {
+    name: 'Amritsar',
+    state: 'Golden Temple',
+    image: '/images/amritsar.jpg'
+  },
+  {
+    name: 'Goa',
+    state: 'Beaches & Cruise',
+    image: '/images/goa.jpg'
   }
 ];
 

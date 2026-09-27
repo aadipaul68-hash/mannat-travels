@@ -22,7 +22,7 @@ import {
   Calendar,
   ListOrdered
 } from 'lucide-react';
-import { TourItem } from '../data/mannatData';
+import { TourItem, ensureTourHasValidImages } from '../data/mannatData';
 
 interface AdminPanelModalProps {
   isOpen: boolean;
@@ -293,7 +293,8 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
         itinerary: formData.itinerary || [],
         showItinerary: formData.showItinerary !== false
       };
-      updateCurrentList([newItem, ...currentList]);
+      const validatedNewItem = ensureTourHasValidImages(newItem);
+      updateCurrentList([validatedNewItem, ...currentList]);
       setIsCreatingNew(false);
 
       // Async sync to Cloud SQL PostgreSQL
@@ -301,29 +302,29 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          slug: newItem.id,
-          title: newItem.title,
+          slug: validatedNewItem.id,
+          title: validatedNewItem.title,
           category: activeTab,
-          destination: newItem.destination,
-          duration: newItem.duration,
-          price: newItem.price,
-          originalPrice: newItem.originalPrice,
-          availableSeats: newItem.availableSeats,
-          totalSeats: newItem.totalSeats,
-          busType: newItem.busType,
-          vehicle: newItem.vehicle,
-          route: newItem.route,
-          departureDate: newItem.departureDate,
-          image: newItem.image,
-          badge: newItem.badge,
-          description: newItem.description,
-          status: newItem.status,
+          destination: validatedNewItem.destination,
+          duration: validatedNewItem.duration,
+          price: validatedNewItem.price,
+          originalPrice: validatedNewItem.originalPrice,
+          availableSeats: validatedNewItem.availableSeats,
+          totalSeats: validatedNewItem.totalSeats,
+          busType: validatedNewItem.busType,
+          vehicle: validatedNewItem.vehicle,
+          route: validatedNewItem.route,
+          departureDate: validatedNewItem.departureDate,
+          image: validatedNewItem.image,
+          badge: validatedNewItem.badge,
+          description: validatedNewItem.description,
+          status: validatedNewItem.status,
         }),
       }).catch((e) => console.error('Error saving new tour to PostgreSQL:', e));
     } else if (isEditing) {
       const updated = currentList.map((item) => {
         if (item.id === isEditing) {
-          return {
+          const merged = {
             ...item,
             ...formData,
             price: Number(formData.price || 0),
@@ -331,6 +332,7 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
             availableSeats: Number(formData.availableSeats || 0),
             totalSeats: Number(formData.totalSeats || 0),
           } as TourItem;
+          return ensureTourHasValidImages(merged);
         }
         return item;
       });
