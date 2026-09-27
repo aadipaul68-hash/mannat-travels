@@ -1072,6 +1072,8 @@ export default function App() {
       <TourDetailModal
         tour={selectedTour}
         theme={theme}
+        allTours={[...visiblePopularTours, ...visibleBusTours, ...visibleHolidayPackages]}
+        onSelectTour={(newTour) => setSelectedTour(newTour)}
         onClose={() => setSelectedTour(null)}
         onOpenQuote={() => setIsQuotePopupOpen(true)}
       />

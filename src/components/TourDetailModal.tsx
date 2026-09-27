@@ -13,13 +13,18 @@ import {
   Utensils,
   Share2,
   AlertCircle,
-  Sparkles
+  Sparkles,
+  Search,
+  Menu,
+  ChevronRight as ArrowRightIcon
 } from 'lucide-react';
 import { TourItem, SITE_INFO, getWhatsAppBookingUrl } from '../data/mannatData';
 
 interface TourDetailModalProps {
   tour: TourItem | null;
   theme?: 'dark' | 'light';
+  allTours?: TourItem[];
+  onSelectTour?: (tour: TourItem) => void;
   onClose: () => void;
   onOpenQuote?: () => void;
 }
@@ -27,6 +32,8 @@ interface TourDetailModalProps {
 export const TourDetailModal: React.FC<TourDetailModalProps> = ({
   tour,
   theme = 'dark',
+  allTours = [],
+  onSelectTour,
   onClose,
   onOpenQuote,
 }) => {
@@ -37,7 +44,14 @@ export const TourDetailModal: React.FC<TourDetailModalProps> = ({
   const [tierPlan, setTierPlan] = useState<'budget' | 'mid-range' | 'premium'>('budget');
   const [openItineraryIndex, setOpenItineraryIndex] = useState<number | null>(0); // First day open by default
   const [showShareToast, setShowShareToast] = useState(false);
+  
+  // Search & Menu drawer states
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
   const touchStartXRef = useRef<number | null>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
 
   // Section anchor refs for smooth tab scrolling inside the modal
   const contentContainerRef = useRef<HTMLDivElement>(null);
@@ -75,12 +89,23 @@ export const TourDetailModal: React.FC<TourDetailModalProps> = ({
     setCurrentImageIndex(0);
     setActiveTab('overview');
     setOpenItineraryIndex(0);
+    setIsSearchOpen(false);
+    setIsMenuOpen(false);
+    setSearchQuery('');
 
     const prevOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
+      if (e.key === 'Escape') {
+        if (isSearchOpen) {
+          setIsSearchOpen(false);
+        } else if (isMenuOpen) {
+          setIsMenuOpen(false);
+        } else {
+          onClose();
+        }
+      }
       if (e.key === 'ArrowLeft') handlePrevImage();
       if (e.key === 'ArrowRight') handleNextImage();
     };
@@ -90,7 +115,16 @@ export const TourDetailModal: React.FC<TourDetailModalProps> = ({
       document.body.style.overflow = prevOverflow;
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [tour, onClose, galleryList.length]);
+  }, [tour, onClose, galleryList.length, isSearchOpen, isMenuOpen]);
+
+  // Focus search input when search is opened
+  useEffect(() => {
+    if (isSearchOpen) {
+      setTimeout(() => {
+        searchInputRef.current?.focus();
+      }, 100);
+    }
+  }, [isSearchOpen]);
 
   if (!tour) return null;
 
@@ -104,6 +138,7 @@ export const TourDetailModal: React.FC<TourDetailModalProps> = ({
 
   const scrollToSection = (tab: 'overview' | 'itinerary' | 'stay-meals' | 'policies') => {
     setActiveTab(tab);
+    setIsMenuOpen(false);
     let targetEl: HTMLElement | null = null;
     if (tab === 'overview') targetEl = overviewRef.current;
     if (tab === 'itinerary') targetEl = itineraryRef.current;
@@ -156,7 +191,7 @@ export const TourDetailModal: React.FC<TourDetailModalProps> = ({
 
   const routeDisplay = places.length > 1 ? places.join('  →  ') : tour.route || tour.destination || 'Customised Route';
 
-  // Determine if Detailed Itinerary is visible (default to true if not explicitly set to false, and only if itinerary array exists)
+  // Determine if Detailed Itinerary is visible
   const isItineraryVisible = tour.showItinerary !== false && Array.isArray(tour.itinerary) && tour.itinerary.length > 0;
 
   let inclusions = Array.isArray(tour.inclusions) && tour.inclusions.length > 0
@@ -174,6 +209,19 @@ export const TourDetailModal: React.FC<TourDetailModalProps> = ({
     'Any personal laundry, room service or medical expenses'
   ];
 
+  // Search filtered tours
+  const searchResults = searchQuery.trim()
+    ? allTours.filter((t) => {
+        const q = searchQuery.toLowerCase();
+        return (
+          t.title.toLowerCase().includes(q) ||
+          (t.destination && t.destination.toLowerCase().includes(q)) ||
+          (t.route && t.route.toLowerCase().includes(q)) ||
+          (t.category && t.category.toLowerCase().includes(q))
+        );
+      })
+    : [];
+
   return (
     <div
       className="fixed inset-0 z-[100] overflow-y-auto bg-black/85 backdrop-blur-md flex items-center justify-center p-0 sm:p-4"
@@ -189,15 +237,15 @@ export const TourDetailModal: React.FC<TourDetailModalProps> = ({
         }`}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* ✦ 1. TOP BRAND HEADER ✦ */}
+        {/* ✦ 1. TOP BRAND HEADER WITH SEARCH & MENU BUTTONS ON UPPER RIGHT (Exact User Request) ✦ */}
         <div
-          className={`px-4 py-2.5 flex items-center justify-between shrink-0 sticky top-0 z-30 transition-colors border-b ${
+          className={`px-3 sm:px-4 py-2.5 flex items-center justify-between shrink-0 sticky top-0 z-30 transition-colors border-b ${
             isDark
               ? 'bg-[#0B101D] border-slate-800'
               : 'bg-white border-slate-200 shadow-xs'
           }`}
         >
-          {/* Brand Logo */}
+          {/* Brand Logo (Left) */}
           <div className="flex items-center gap-2">
             <span className="font-serif font-bold text-xl sm:text-2xl tracking-tight flex items-center gap-1.5">
               <span className="w-6 h-6 rounded-full bg-gradient-to-tr from-[#f1683a] to-amber-500 text-slate-950 flex items-center justify-center text-xs font-black shadow-sm">
@@ -208,30 +256,264 @@ export const TourDetailModal: React.FC<TourDetailModalProps> = ({
             </span>
           </div>
 
-          <div className="flex items-center gap-2 sm:gap-3">
+          {/* Upper Right Action Buttons: Search | Menu | Share | Close */}
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            
+            {/* 🔍 Search Button (Search for places to visit like Holidify) */}
+            <button
+              type="button"
+              onClick={() => {
+                setIsSearchOpen(!isSearchOpen);
+                if (isMenuOpen) setIsMenuOpen(false);
+              }}
+              title="Search packages & destinations"
+              className={`p-2 rounded-lg flex items-center gap-1.5 text-xs font-semibold transition cursor-pointer border ${
+                isSearchOpen
+                  ? isDark
+                    ? 'bg-amber-500 text-slate-950 border-amber-400 font-bold'
+                    : 'bg-[#ea384d] text-white border-[#ea384d]'
+                  : isDark
+                  ? 'bg-slate-900/90 hover:bg-slate-800 text-slate-300 border-slate-700 hover:border-amber-400'
+                  : 'bg-slate-100 hover:bg-slate-200 text-slate-700 border-slate-200'
+              }`}
+            >
+              <Search className="w-4 h-4" />
+              <span className="hidden sm:inline">Search</span>
+            </button>
+
+            {/* 🍔 Menu Button (Navigation & Quick links) */}
+            <button
+              type="button"
+              onClick={() => {
+                setIsMenuOpen(!isMenuOpen);
+                if (isSearchOpen) setIsSearchOpen(false);
+              }}
+              title="Quick Menu"
+              className={`p-2 rounded-lg flex items-center gap-1.5 text-xs font-semibold transition cursor-pointer border ${
+                isMenuOpen
+                  ? isDark
+                    ? 'bg-amber-500 text-slate-950 border-amber-400 font-bold'
+                    : 'bg-[#ea384d] text-white border-[#ea384d]'
+                  : isDark
+                  ? 'bg-slate-900/90 hover:bg-slate-800 text-slate-300 border-slate-700 hover:border-amber-400'
+                  : 'bg-slate-100 hover:bg-slate-200 text-slate-700 border-slate-200'
+              }`}
+            >
+              <Menu className="w-4 h-4" />
+              <span className="hidden sm:inline">Menu</span>
+            </button>
+
+            {/* Share Button */}
             <button
               type="button"
               onClick={handleShare}
               title="Share package"
-              className={`p-2 rounded-full transition cursor-pointer ${
-                isDark ? 'hover:bg-slate-800 text-slate-300' : 'hover:bg-slate-100 text-slate-600'
+              className={`p-2 rounded-lg transition cursor-pointer border ${
+                isDark
+                  ? 'bg-slate-900/90 hover:bg-slate-800 text-slate-300 border-slate-700'
+                  : 'bg-slate-100 hover:bg-slate-200 text-slate-700 border-slate-200'
               }`}
             >
-              <Share2 className="w-4 h-4 sm:w-5 sm:h-5" />
+              <Share2 className="w-4 h-4" />
             </button>
+
+            {/* Close Modal Button */}
             <button
               onClick={onClose}
               aria-label="Close modal"
-              className={`p-1.5 sm:p-2 rounded-full transition cursor-pointer ${
+              title="Close"
+              className={`p-2 rounded-lg transition cursor-pointer border ${
                 isDark
-                  ? 'bg-slate-800 hover:bg-slate-700 text-slate-200'
-                  : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
+                  ? 'bg-slate-800 hover:bg-red-950 text-slate-200 hover:text-red-400 border-slate-700'
+                  : 'bg-slate-100 hover:bg-red-50 text-slate-700 hover:text-red-500 border-slate-200'
               }`}
             >
-              <X className="w-5 h-5" />
+              <X className="w-4 h-4 sm:w-5 sm:h-5" />
             </button>
           </div>
         </div>
+
+        {/* ✦ EXPANDABLE SEARCH BAR DROPDOWN (When Search Button is clicked) ✦ */}
+        {isSearchOpen && (
+          <div
+            className={`p-3 border-b animate-in fade-in slide-in-from-top-2 duration-200 z-30 ${
+              isDark ? 'bg-[#080D1A] border-slate-800' : 'bg-slate-50 border-slate-200'
+            }`}
+          >
+            <div className="relative">
+              <Search
+                className={`w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 ${
+                  isDark ? 'text-amber-400' : 'text-slate-400'
+                }`}
+              />
+              <input
+                ref={searchInputRef}
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search places, temples (e.g. Kedarnath, Ayodhya, Nainital)..."
+                className={`w-full pl-9 pr-8 py-2 rounded-xl text-xs sm:text-sm font-medium focus:outline-none border ${
+                  isDark
+                    ? 'bg-slate-900 border-slate-700 text-white placeholder-slate-500 focus:border-amber-400'
+                    : 'bg-white border-slate-300 text-slate-900 placeholder-slate-400 focus:border-[#ea384d]'
+                }`}
+              />
+              {searchQuery && (
+                <button
+                  type="button"
+                  onClick={() => setSearchQuery('')}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              )}
+            </div>
+
+            {/* Live Search Suggestions Dropdown */}
+            {searchQuery.trim() && (
+              <div
+                className={`mt-2 max-h-56 overflow-y-auto rounded-xl border divide-y ${
+                  isDark
+                    ? 'bg-slate-900 border-slate-800 divide-slate-800 text-slate-200'
+                    : 'bg-white border-slate-200 divide-slate-100 text-slate-800'
+                }`}
+              >
+                {searchResults.length > 0 ? (
+                  searchResults.map((resultTour) => (
+                    <button
+                      key={resultTour.id}
+                      type="button"
+                      onClick={() => {
+                        if (onSelectTour) onSelectTour(resultTour);
+                        setIsSearchOpen(false);
+                      }}
+                      className={`w-full p-2.5 text-left flex items-center justify-between gap-3 transition cursor-pointer ${
+                        isDark ? 'hover:bg-slate-800' : 'hover:bg-slate-50'
+                      }`}
+                    >
+                      <div className="flex items-center gap-2.5 overflow-hidden">
+                        <img
+                          src={resultTour.image}
+                          alt={resultTour.title}
+                          className="w-10 h-10 rounded-lg object-cover shrink-0"
+                        />
+                        <div className="truncate">
+                          <div className="font-bold text-xs truncate">{resultTour.title}</div>
+                          <div className="text-[11px] text-slate-400 flex items-center gap-2">
+                            <span>{resultTour.duration}</span>
+                            <span>•</span>
+                            <span className="text-amber-400 font-semibold">
+                              ₹{resultTour.price.toLocaleString('en-IN')}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                      <ArrowRightIcon className="w-4 h-4 text-slate-400 shrink-0" />
+                    </button>
+                  ))
+                ) : (
+                  <div className="p-3 text-center text-xs text-slate-500">
+                    No matching tour packages found for "{searchQuery}"
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ✦ EXPANDABLE MENU DRAWER (When Menu Button is clicked) ✦ */}
+        {isMenuOpen && (
+          <div
+            className={`p-4 border-b space-y-3 animate-in fade-in slide-in-from-top-2 duration-200 z-30 ${
+              isDark ? 'bg-[#080D1A] border-slate-800' : 'bg-slate-50 border-slate-200'
+            }`}
+          >
+            <div className="text-xs font-bold uppercase tracking-wider text-slate-400">
+              Quick Section Links:
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              <button
+                type="button"
+                onClick={() => scrollToSection('overview')}
+                className={`p-2.5 rounded-xl border text-xs font-semibold text-center transition cursor-pointer ${
+                  isDark
+                    ? 'bg-slate-900 border-slate-800 text-slate-200 hover:border-amber-400'
+                    : 'bg-white border-slate-200 text-slate-800 hover:border-[#ea384d]'
+                }`}
+              >
+                1. Overview
+              </button>
+              {isItineraryVisible && (
+                <button
+                  type="button"
+                  onClick={() => scrollToSection('itinerary')}
+                  className={`p-2.5 rounded-xl border text-xs font-semibold text-center transition cursor-pointer ${
+                    isDark
+                      ? 'bg-slate-900 border-slate-800 text-slate-200 hover:border-amber-400'
+                      : 'bg-white border-slate-200 text-slate-800 hover:border-[#ea384d]'
+                  }`}
+                >
+                  2. Itinerary
+                </button>
+              )}
+              <button
+                type="button"
+                onClick={() => scrollToSection('stay-meals')}
+                className={`p-2.5 rounded-xl border text-xs font-semibold text-center transition cursor-pointer ${
+                  isDark
+                    ? 'bg-slate-900 border-slate-800 text-slate-200 hover:border-amber-400'
+                    : 'bg-white border-slate-200 text-slate-800 hover:border-[#ea384d]'
+                }`}
+              >
+                3. Stay & Meals
+              </button>
+              <button
+                type="button"
+                onClick={() => scrollToSection('policies')}
+                className={`p-2.5 rounded-xl border text-xs font-semibold text-center transition cursor-pointer ${
+                  isDark
+                    ? 'bg-slate-900 border-slate-800 text-slate-200 hover:border-amber-400'
+                    : 'bg-white border-slate-200 text-slate-800 hover:border-[#ea384d]'
+                }`}
+              >
+                4. Policies
+              </button>
+            </div>
+
+            {/* Quick Actions inside Menu */}
+            <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-slate-800/60">
+              <a
+                href={`tel:${SITE_INFO.phone}`}
+                className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold flex items-center gap-1.5"
+              >
+                <Phone className="w-3.5 h-3.5 text-amber-400" />
+                <span>Call Us</span>
+              </a>
+              <a
+                href={whatsappUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-3 py-1.5 rounded-lg bg-emerald-700 hover:bg-emerald-600 text-white text-xs font-bold flex items-center gap-1.5"
+              >
+                <MessageCircle className="w-3.5 h-3.5" />
+                <span>WhatsApp</span>
+              </a>
+              {onOpenQuote && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsMenuOpen(false);
+                    onOpenQuote();
+                  }}
+                  className="px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-bold flex items-center gap-1.5 cursor-pointer"
+                >
+                  <Sparkles className="w-3.5 h-3.5" />
+                  <span>Get Free Quotes</span>
+                </button>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* ✦ 2. SUB-NAVIGATION TABS (Overview | Itinerary | Stay & Meals | Policies) ✦ */}
         <div
@@ -324,7 +606,7 @@ export const TourDetailModal: React.FC<TourDetailModalProps> = ({
               className="w-full h-full object-cover transition-all duration-300"
             />
 
-            {/* Left Arrow Button */}
+            {/* Left Arrow Button (Matching Holidify circular white icon) */}
             {galleryList.length > 1 && (
               <button
                 type="button"
@@ -340,7 +622,7 @@ export const TourDetailModal: React.FC<TourDetailModalProps> = ({
               </button>
             )}
 
-            {/* Right Arrow Button */}
+            {/* Right Arrow Button (Matching Holidify circular white icon) */}
             {galleryList.length > 1 && (
               <button
                 type="button"
@@ -415,7 +697,7 @@ export const TourDetailModal: React.FC<TourDetailModalProps> = ({
               </div>
             </div>
 
-            {/* Route Breadcrumb Strip */}
+            {/* Route Breadcrumb Strip: Port Blair(2N) → Havelock(2N) → Neil Island(1N) */}
             <div
               className={`text-xs sm:text-sm font-medium leading-relaxed p-2.5 rounded-lg border ${
                 isDark
