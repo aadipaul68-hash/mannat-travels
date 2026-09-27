@@ -17,6 +17,7 @@ import {
   Sun,
   Moon,
   User,
+  Search,
 } from 'lucide-react';
 import { AdiyogiHeroSlider } from './components/AdiyogiHeroSlider';
 import { AdiyogiPopupModal } from './components/AdiyogiPopupModal';
@@ -25,6 +26,8 @@ import { TourDetailModal } from './components/TourDetailModal';
 import { AdminPanelModal } from './components/AdminPanelModal';
 import { CustomerAuthModal } from './components/CustomerAuthModal';
 import { CustomerReviewsSection } from './components/CustomerReviewsSection';
+import { SearchModal } from './components/SearchModal';
+import { MenuDrawer } from './components/MenuDrawer';
 import {
   SITE_INFO,
   POPULAR_TOURS_DEFAULT,
@@ -93,6 +96,8 @@ export default function App() {
   const [isQuotePopupOpen, setIsQuotePopupOpen] = useState(false);
   const [isAdminModalOpen, setIsAdminModalOpen] = useState(false);
   const [isCustomerAuthOpen, setIsCustomerAuthOpen] = useState(false);
+  const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
+  const [isMenuDrawerOpen, setIsMenuDrawerOpen] = useState(false);
 
   // Theme Mode: Dark (default luxury black/gold) or Light (clean ivory/warm amber)
   const [theme, setTheme] = useState<'dark' | 'light'>(() => {
@@ -201,13 +206,41 @@ export default function App() {
             </a>
           </nav>
 
-          {/* Header Action Buttons */}
-          <div className="hidden sm:flex items-center gap-3">
+          {/* Header Action Buttons (Desktop - Upper Right) */}
+          <div className="hidden md:flex items-center gap-2.5">
+            {/* 🔍 Search Button (Upper Right) */}
+            <button
+              onClick={() => setIsSearchModalOpen(true)}
+              title="Search Tours & Packages"
+              className={`px-3 py-2 rounded-xl border flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider transition cursor-pointer shadow-sm ${
+                theme === 'dark'
+                  ? 'border-amber-500/40 bg-slate-900/90 text-amber-300 hover:bg-amber-500 hover:text-slate-950 hover:border-amber-400'
+                  : 'border-slate-300 bg-white text-slate-800 hover:bg-[#f1683a] hover:text-white hover:border-[#f1683a]'
+              }`}
+            >
+              <Search className="w-4 h-4 text-[#f1683a]" />
+              <span>Search</span>
+            </button>
+
+            {/* ☰ Menu Button (Upper Right) */}
+            <button
+              onClick={() => setIsMenuDrawerOpen(true)}
+              title="Open Menu & All Pages"
+              className={`px-3 py-2 rounded-xl border flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider transition cursor-pointer shadow-sm ${
+                theme === 'dark'
+                  ? 'border-amber-500/40 bg-slate-900/90 text-amber-300 hover:bg-slate-800 hover:border-amber-300'
+                  : 'border-slate-300 bg-white text-slate-800 hover:bg-slate-100 shadow-sm'
+              }`}
+            >
+              <Menu className="w-4 h-4 text-amber-400" />
+              <span>Menu</span>
+            </button>
+
             {/* Theme Toggle Button (Dark / Light) */}
             <button
               onClick={toggleTheme}
               title={`Switch to ${theme === 'dark' ? 'Light' : 'Dark'} mode`}
-              className={`p-2 rounded-lg border transition cursor-pointer flex items-center gap-1.5 text-xs font-semibold ${
+              className={`p-2 rounded-xl border transition cursor-pointer flex items-center gap-1.5 text-xs font-semibold ${
                 theme === 'dark'
                   ? 'border-amber-500/40 bg-slate-900/80 text-amber-300 hover:bg-slate-800'
                   : 'border-slate-300 bg-white text-slate-800 hover:bg-slate-100 shadow-sm'
@@ -215,15 +248,9 @@ export default function App() {
               aria-label="Toggle Theme"
             >
               {theme === 'dark' ? (
-                <>
-                  <Sun className="w-4 h-4 text-amber-400" />
-                  <span className="hidden lg:inline text-[11px]">Light</span>
-                </>
+                <Sun className="w-4 h-4 text-amber-400" />
               ) : (
-                <>
-                  <Moon className="w-4 h-4 text-indigo-600" />
-                  <span className="hidden lg:inline text-[11px]">Dark</span>
-                </>
+                <Moon className="w-4 h-4 text-indigo-600" />
               )}
             </button>
 
@@ -231,200 +258,59 @@ export default function App() {
             <button
               onClick={() => setIsCustomerAuthOpen(true)}
               title="Customer Login / Member Account"
-              className="px-3 py-2 rounded-lg border border-amber-400/40 bg-slate-900/90 hover:bg-slate-800 text-amber-300 text-xs font-bold uppercase tracking-wider transition flex items-center gap-1.5 cursor-pointer shadow-sm"
+              className="px-2.5 py-2 rounded-xl border border-amber-400/40 bg-slate-900/90 hover:bg-slate-800 text-amber-300 text-xs font-bold uppercase tracking-wider transition flex items-center gap-1.5 cursor-pointer shadow-sm"
             >
               <User className="w-3.5 h-3.5 text-amber-400" />
-              <span>Login / Account</span>
+              <span className="hidden lg:inline">Login</span>
             </button>
 
-            {/* Admin Panel Trigger (PIN Protected) */}
-            <button
-              onClick={() => setIsAdminModalOpen(true)}
-              title="Admin Panel (PIN Protected)"
-              className="px-3 py-2 rounded-lg border border-amber-500/40 bg-amber-950/40 hover:bg-amber-900/60 text-amber-300 text-xs font-bold uppercase tracking-wider transition flex items-center gap-1.5 cursor-pointer shadow-sm"
-            >
-              <Lock className="w-3.5 h-3.5 text-amber-400" />
-              <span>Admin Panel</span>
-            </button>
-
-            <button
-              onClick={() => setIsQuotePopupOpen(true)}
-              className="px-3.5 py-2 rounded-lg border border-[#f1683a]/40 bg-[#f1683a]/15 hover:bg-[#f1683a] text-white text-xs font-bold uppercase tracking-wider transition cursor-pointer"
-            >
-              Contact Us
-            </button>
-            <a
-              href={getGeneralWhatsAppUrl()}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg border border-emerald-500/30 bg-emerald-950/30 hover:bg-emerald-900/50 hover:border-emerald-400 text-emerald-300 text-xs font-semibold tracking-wider uppercase transition shadow-sm"
-            >
-              <MessageCircle className="w-3.5 h-3.5 fill-emerald-400 text-emerald-400" />
-              <span>WhatsApp</span>
-            </a>
-            <a href={`tel:${SITE_INFO.phone}`} className="btn-luxury-primary">
+            <a href={`tel:${SITE_INFO.phone}`} className="btn-luxury-primary py-2 px-3 text-xs">
               <Phone className="w-3 h-3 stroke-[2.5]" />
               <span>{SITE_INFO.phone}</span>
             </a>
           </div>
 
-          {/* Mobile hamburger */}
+          {/* Header Action Buttons (Mobile - Upper Right) */}
           <div className="flex items-center gap-1.5 md:hidden">
+            {/* 🔍 Search Button (Upper Right Mobile) */}
             <button
-              onClick={toggleTheme}
-              className={`p-2 rounded-lg border text-xs font-bold ${
+              onClick={() => setIsSearchModalOpen(true)}
+              className={`p-2 rounded-lg border text-xs font-bold transition flex items-center gap-1 cursor-pointer ${
                 theme === 'dark'
-                  ? 'text-amber-300 bg-slate-900 border-amber-500/40'
+                  ? 'text-amber-300 bg-slate-900/90 border-amber-500/40 hover:bg-slate-800'
                   : 'text-slate-800 bg-white border-slate-300 shadow-sm'
               }`}
-              aria-label="Toggle Theme"
+              aria-label="Search Packages"
+              title="Search Packages"
             >
-              {theme === 'dark' ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-indigo-600" />}
+              <Search className="w-4 h-4 text-[#f1683a]" />
+              <span className="text-[11px] font-bold">Search</span>
             </button>
+
+            {/* ☰ Menu Button (Upper Right Mobile) */}
             <button
-              onClick={() => setIsCustomerAuthOpen(true)}
-              className="p-2 text-amber-300 bg-slate-900/90 border border-amber-400/40 rounded-lg text-xs font-bold"
-              aria-label="Customer Login"
-              title="Customer Login"
+              onClick={() => setIsMenuDrawerOpen(true)}
+              className={`p-2 rounded-lg border text-xs font-bold transition flex items-center gap-1 cursor-pointer ${
+                theme === 'dark'
+                  ? 'text-slate-200 bg-slate-900/90 border-amber-500/40 hover:bg-slate-800'
+                  : 'text-slate-800 bg-white border-slate-300 shadow-sm'
+              }`}
+              aria-label="Open Menu"
+              title="Menu"
             >
-              <User className="w-4 h-4 text-amber-400" />
+              <Menu className="w-4 h-4 text-amber-400" />
+              <span className="text-[11px] font-bold">Menu</span>
             </button>
-            <button
-              onClick={() => setIsAdminModalOpen(true)}
-              className="p-2 text-amber-300 bg-amber-950/40 border border-amber-500/40 rounded-lg text-xs font-bold"
-              aria-label="Manage Packages"
-              title="Admin Panel"
-            >
-              <Lock className="w-4 h-4 text-amber-400" />
-            </button>
+
+            {/* Quick Quote Button */}
             <button
               onClick={() => setIsQuotePopupOpen(true)}
-              className="px-2.5 py-1.5 text-xs bg-[#f1683a] text-white font-bold rounded shadow-sm"
+              className="px-2.5 py-2 text-xs bg-[#f1683a] text-white font-bold rounded-lg shadow-sm active:scale-95 cursor-pointer"
             >
               Quote
             </button>
-            <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 text-slate-300 hover:text-white rounded-lg bg-slate-900/60 border border-slate-800"
-              aria-label="Toggle menu"
-            >
-              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-            </button>
           </div>
         </div>
-
-        {/* Mobile menu drawer */}
-        {mobileMenuOpen && (
-          <div className="md:hidden bg-[#080B11]/98 border-b border-amber-500/20 px-6 py-6 space-y-4">
-            <a
-              href="#hero"
-              onClick={() => setMobileMenuOpen(false)}
-              className="block text-white hover:text-amber-400 py-1"
-            >
-              Home
-            </a>
-            <a
-              href="#popular-tours"
-              onClick={() => setMobileMenuOpen(false)}
-              className="block text-slate-300 hover:text-amber-400 py-1"
-            >
-              Popular Tours
-            </a>
-            <a
-              href="#packages-section"
-              onClick={() => setMobileMenuOpen(false)}
-              className="block text-amber-300 hover:text-amber-400 py-1"
-            >
-              Holiday Packages Page
-            </a>
-            <a
-              href="#bus-tours-section"
-              onClick={() => setMobileMenuOpen(false)}
-              className="block text-slate-300 hover:text-amber-400 py-1"
-            >
-              Bus Tours & Yatras
-            </a>
-            <a
-              href="#why-choose"
-              onClick={() => setMobileMenuOpen(false)}
-              className="block text-slate-300 hover:text-amber-400 py-1"
-            >
-              Why Choose Us
-            </a>
-            <a
-              href="#destinations"
-              onClick={() => setMobileMenuOpen(false)}
-              className="block text-slate-300 hover:text-amber-400 py-1"
-            >
-              Featured Destinations
-            </a>
-            <a
-              href="#reviews"
-              onClick={() => setMobileMenuOpen(false)}
-              className="block text-amber-300 hover:text-amber-400 py-1"
-            >
-              Customer Reviews (5★)
-            </a>
-            <a
-              href="#contact"
-              onClick={() => setMobileMenuOpen(false)}
-              className="block text-[#f1683a] hover:text-amber-400 py-1 font-bold"
-            >
-              Plan Your Tour Right Now
-            </a>
-
-            <div className="pt-4 border-t border-slate-800 flex flex-col gap-3">
-              <button
-                onClick={() => {
-                  toggleTheme();
-                }}
-                className={`w-full py-3 rounded-lg uppercase tracking-wider text-xs font-bold flex items-center justify-center gap-2 border transition ${
-                  theme === 'dark'
-                    ? 'bg-slate-900 border-amber-500/40 text-amber-300'
-                    : 'bg-white border-slate-300 text-slate-800 shadow-sm'
-                }`}
-              >
-                {theme === 'dark' ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-indigo-600" />}
-                <span>Switch to {theme === 'dark' ? 'Light Theme' : 'Dark Theme'}</span>
-              </button>
-
-              <button
-                onClick={() => {
-                  setMobileMenuOpen(false);
-                  setIsCustomerAuthOpen(true);
-                }}
-                className="w-full py-3 bg-gradient-to-r from-amber-500 to-[#f1683a] text-slate-950 font-bold rounded-lg uppercase tracking-wider text-xs flex items-center justify-center gap-2 cursor-pointer shadow-md"
-              >
-                <User className="w-4 h-4" />
-                <span>Customer Login / Account (ग्राहक लॉगिन)</span>
-              </button>
-
-              <button
-                onClick={() => {
-                  setMobileMenuOpen(false);
-                  setIsAdminModalOpen(true);
-                }}
-                className="w-full py-3 bg-amber-600 hover:bg-amber-500 text-slate-950 font-bold rounded-lg uppercase tracking-wider text-xs flex items-center justify-center gap-2 cursor-pointer"
-              >
-                <Lock className="w-4 h-4" />
-                <span>Admin Login (गुप्त एडमिन पैनल)</span>
-              </button>
-
-              <button
-                onClick={() => {
-                  setMobileMenuOpen(false);
-                  setIsQuotePopupOpen(true);
-                }}
-                className="w-full py-3 bg-[#f1683a] text-white font-bold rounded-lg uppercase tracking-wider text-xs"
-              >
-                Contact Us (हमसे संपर्क करें)
-              </button>
-              <a href={`tel:${SITE_INFO.phone}`} className="btn-luxury-primary w-full text-center">
-                Call: {SITE_INFO.phone}
-              </a>
-            </div>
-          </div>
-        )}
       </header>
 
       {/* ✦ EXACT ADIYOGI HERO BANNER SLIDER WITH FLOATING THUMBNAILS & ANIMATIONS ✦ */}
@@ -1101,6 +987,42 @@ export default function App() {
         holidayPackages={holidayPackages}
         setHolidayPackages={setHolidayPackages}
         onResetToDefaults={handleResetToDefaults}
+      />
+
+      {/* ✦ HOMEPAGE SEARCH MODAL (Upper Right Search Button) ✦ */}
+      <SearchModal
+        isOpen={isSearchModalOpen}
+        theme={theme}
+        allTours={[...visiblePopularTours, ...visibleBusTours, ...visibleHolidayPackages]}
+        onClose={() => setIsSearchModalOpen(false)}
+        onSelectTour={(tour) => {
+          setSelectedTour(tour);
+          setIsSearchModalOpen(false);
+        }}
+      />
+
+      {/* ✦ HOMEPAGE MENU DRAWER (Upper Right Menu Button) ✦ */}
+      <MenuDrawer
+        isOpen={isMenuDrawerOpen}
+        theme={theme}
+        onToggleTheme={toggleTheme}
+        onOpenSearch={() => {
+          setIsMenuDrawerOpen(false);
+          setIsSearchModalOpen(true);
+        }}
+        onOpenQuote={() => {
+          setIsMenuDrawerOpen(false);
+          setIsQuotePopupOpen(true);
+        }}
+        onOpenCustomerAuth={() => {
+          setIsMenuDrawerOpen(false);
+          setIsCustomerAuthOpen(true);
+        }}
+        onOpenAdmin={() => {
+          setIsMenuDrawerOpen(false);
+          setIsAdminModalOpen(true);
+        }}
+        onClose={() => setIsMenuDrawerOpen(false)}
       />
 
     </div>
