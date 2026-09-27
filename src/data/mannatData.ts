@@ -527,32 +527,6 @@ export const POPULAR_TOURS_DEFAULT: TourItem[] = [
     ],
     image: '/images/mussoorie.jpg',
     status: 'active'
-  },
-  {
-    id: 'tour-chardham-divine',
-    title: 'Divya Char Dham Yatra (Kedarnath & Badrinath)',
-    category: 'Spiritual Tours',
-    destination: 'Uttarakhand Devbhoomi (Four Shrines)',
-    duration: '9 Nights / 10 Days',
-    departureDate: 'Upcoming Pilgrim Batch',
-    price: 24999,
-    originalPrice: 28999,
-    advanceAmount: 5000,
-    availableSeats: 4,
-    totalSeats: 25,
-    boardingLocation: 'Muzaffarnagar, Haridwar & Delhi NCR',
-    badge: 'Devotional Supreme',
-    description: 'Sacred life-changing pilgrimage to Kedarnath, Badrinath, Gangotri & Yamunotri with pure satvik meals, medical assistance, and comfortable stays.',
-    route: 'Haridwar - Barkot - Yamunotri - Uttarkashi - Gangotri - Guptkashi - Kedarnath - Badrinath - Rishikesh',
-    placesCovered: ['Yamunotri Dham', 'Gangotri Shrine', 'Shri Kedarnath Jyotirlinga', 'Badrinath Dham', 'Devprayag Sangam'],
-    inclusions: [
-      'Heavy-duty Deluxe Coach / Tempo Traveller with Hill Specialist',
-      'Clean Dharmshala & Hotel Accommodations near Temples',
-      '100% Pure Satvik Vegetarian Breakfast, Lunch & Dinner',
-      'Biometric Yatra Registration, VIP Slip Coordination & First Aid'
-    ],
-    image: '/images/chardham.jpg',
-    status: 'active'
   }
 ];
 

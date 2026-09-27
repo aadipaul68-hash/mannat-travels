@@ -42,10 +42,17 @@ const HOLIDAY_STORAGE_KEY = 'mannat_holiday_packages_v1';
 
 export default function App() {
   // Manage state with LocalStorage persistence so additions/deletions/hide persist!
+  // Safely deduplicate by id to avoid any duplicate key React warnings from previously stored data
   const [popularTours, setPopularTours] = useState<TourItem[]>(() => {
     try {
       const saved = localStorage.getItem(POPULAR_STORAGE_KEY);
-      return saved ? JSON.parse(saved) : POPULAR_TOURS_DEFAULT;
+      const rawList: TourItem[] = saved ? JSON.parse(saved) : POPULAR_TOURS_DEFAULT;
+      const seen = new Set<string>();
+      return rawList.filter((item) => {
+        if (!item || !item.id || seen.has(item.id)) return false;
+        seen.add(item.id);
+        return true;
+      });
     } catch {
       return POPULAR_TOURS_DEFAULT;
     }
@@ -54,7 +61,13 @@ export default function App() {
   const [busTours, setBusTours] = useState<TourItem[]>(() => {
     try {
       const saved = localStorage.getItem(BUS_STORAGE_KEY);
-      return saved ? JSON.parse(saved) : BUS_TOURS;
+      const rawList: TourItem[] = saved ? JSON.parse(saved) : BUS_TOURS;
+      const seen = new Set<string>();
+      return rawList.filter((item) => {
+        if (!item || !item.id || seen.has(item.id)) return false;
+        seen.add(item.id);
+        return true;
+      });
     } catch {
       return BUS_TOURS;
     }
@@ -63,7 +76,13 @@ export default function App() {
   const [holidayPackages, setHolidayPackages] = useState<TourItem[]>(() => {
     try {
       const saved = localStorage.getItem(HOLIDAY_STORAGE_KEY);
-      return saved ? JSON.parse(saved) : HOLIDAY_PACKAGES;
+      const rawList: TourItem[] = saved ? JSON.parse(saved) : HOLIDAY_PACKAGES;
+      const seen = new Set<string>();
+      return rawList.filter((item) => {
+        if (!item || !item.id || seen.has(item.id)) return false;
+        seen.add(item.id);
+        return true;
+      });
     } catch {
       return HOLIDAY_PACKAGES;
     }
