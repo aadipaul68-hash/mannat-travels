@@ -156,6 +156,9 @@ export const TourDetailModal: React.FC<TourDetailModalProps> = ({
 
   const routeDisplay = places.length > 1 ? places.join('  →  ') : tour.route || tour.destination || 'Customised Route';
 
+  // Determine if Detailed Itinerary is visible (default to true if not explicitly set to false, and only if itinerary array exists)
+  const isItineraryVisible = tour.showItinerary !== false && Array.isArray(tour.itinerary) && tour.itinerary.length > 0;
+
   let inclusions = Array.isArray(tour.inclusions) && tour.inclusions.length > 0
     ? tour.inclusions
     : [
@@ -253,21 +256,23 @@ export const TourDetailModal: React.FC<TourDetailModalProps> = ({
           >
             Overview
           </button>
-          <button
-            type="button"
-            onClick={() => scrollToSection('itinerary')}
-            className={`py-2.5 border-b-2 whitespace-nowrap transition cursor-pointer ${
-              activeTab === 'itinerary'
-                ? isDark
-                  ? 'border-[#f1683a] text-amber-400 font-bold'
-                  : 'border-[#ea384d] text-[#ea384d] font-bold'
-                : isDark
-                ? 'border-transparent hover:text-white'
-                : 'border-transparent hover:text-slate-900'
-            }`}
-          >
-            Itinerary
-          </button>
+          {isItineraryVisible && (
+            <button
+              type="button"
+              onClick={() => scrollToSection('itinerary')}
+              className={`py-2.5 border-b-2 whitespace-nowrap transition cursor-pointer ${
+                activeTab === 'itinerary'
+                  ? isDark
+                    ? 'border-[#f1683a] text-amber-400 font-bold'
+                    : 'border-[#ea384d] text-[#ea384d] font-bold'
+                  : isDark
+                  ? 'border-transparent hover:text-white'
+                  : 'border-transparent hover:text-slate-900'
+              }`}
+            >
+              Itinerary
+            </button>
+          )}
           <button
             type="button"
             onClick={() => scrollToSection('stay-meals')}
@@ -542,30 +547,30 @@ export const TourDetailModal: React.FC<TourDetailModalProps> = ({
             </div>
           </div>
 
-          {/* ✦ 5. DETAILED ITINERARY SECTION ✦ */}
-          <div ref={itineraryRef} className="p-4 sm:p-6 space-y-4">
-            <div
-              className={`flex items-center justify-between border-b pb-2 ${
-                isDark ? 'border-slate-800' : 'border-slate-200'
-              }`}
-            >
-              <h2
-                className={`text-lg sm:text-xl font-bold font-serif ${
-                  isDark ? 'text-white' : 'text-slate-900'
+          {/* ✦ 5. DETAILED ITINERARY SECTION (Only rendered when enabled and non-empty) ✦ */}
+          {isItineraryVisible && (
+            <div ref={itineraryRef} className="p-4 sm:p-6 space-y-4">
+              <div
+                className={`flex items-center justify-between border-b pb-2 ${
+                  isDark ? 'border-slate-800' : 'border-slate-200'
                 }`}
               >
-                Detailed Itinerary
-              </h2>
-              {Array.isArray(tour.itinerary) && tour.itinerary.length > 0 && (
-                <span className={`text-xs font-semibold ${isDark ? 'text-amber-400' : 'text-slate-500'}`}>
-                  {tour.itinerary.length} Days Schedule
-                </span>
-              )}
-            </div>
+                <h2
+                  className={`text-lg sm:text-xl font-bold font-serif ${
+                    isDark ? 'text-white' : 'text-slate-900'
+                  }`}
+                >
+                  Detailed Itinerary
+                </h2>
+                {Array.isArray(tour.itinerary) && tour.itinerary.length > 0 && (
+                  <span className={`text-xs font-semibold ${isDark ? 'text-amber-400' : 'text-slate-500'}`}>
+                    {tour.itinerary.length} Days Schedule
+                  </span>
+                )}
+              </div>
 
-            {Array.isArray(tour.itinerary) && tour.itinerary.length > 0 ? (
               <div className="space-y-3">
-                {tour.itinerary.map((dayItem, idx) => {
+                {tour.itinerary!.map((dayItem, idx) => {
                   const isOpen = openItineraryIndex === idx;
                   return (
                     <div
@@ -623,24 +628,8 @@ export const TourDetailModal: React.FC<TourDetailModalProps> = ({
                   );
                 })}
               </div>
-            ) : (
-              <div
-                className={`p-4 rounded-xl text-xs sm:text-sm leading-relaxed border ${
-                  isDark
-                    ? 'bg-slate-900/60 border-slate-800 text-slate-300'
-                    : 'bg-slate-50 border-slate-200 text-slate-600'
-                }`}
-              >
-                <p className={`font-semibold mb-1 ${isDark ? 'text-white' : 'text-slate-800'}`}>
-                  Customised Tour Program Available
-                </p>
-                <p>
-                  {tour.description ||
-                    'Full detailed schedule including scenic transfers, hotel check-ins, VIP darshan passes, and local mountain sightseeing provided on WhatsApp inquiry.'}
-                </p>
-              </div>
-            )}
-          </div>
+            </div>
+          )}
 
           {/* ✦ 6. STAY & MEALS SECTION ✦ */}
           <div ref={stayMealsRef} className="p-4 sm:p-6 space-y-4">

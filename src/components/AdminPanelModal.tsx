@@ -18,7 +18,9 @@ import {
   Unlock,
   KeyRound,
   ShieldCheck,
-  AlertCircle
+  AlertCircle,
+  Calendar,
+  ListOrdered
 } from 'lucide-react';
 import { TourItem } from '../data/mannatData';
 
@@ -184,6 +186,20 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
     }
   };
 
+  const handleToggleItineraryHide = (id: string) => {
+    const updated = currentList.map((item) => {
+      if (item.id === id) {
+        // If undefined or true, it was visible -> hide it (false). If false -> unhide it (true).
+        const currentShow = item.showItinerary !== false;
+        return { ...item, showItinerary: !currentShow };
+      }
+      return item;
+    });
+    updateCurrentList(updated);
+    setSavedSuccessMsg('Itinerary display updated!');
+    setTimeout(() => setSavedSuccessMsg(''), 2500);
+  };
+
   const handleDelete = async (id: string, title: string) => {
     if (window.confirm(`Are you sure you want to delete "${title}"?`)) {
       const updated = currentList.filter((item) => item.id !== id);
@@ -199,7 +215,11 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
   const handleStartEdit = (item: TourItem) => {
     setIsEditing(item.id);
     setIsCreatingNew(false);
-    setFormData({ ...item });
+    setFormData({
+      ...item,
+      itinerary: Array.isArray(item.itinerary) ? [...item.itinerary] : [],
+      showItinerary: item.showItinerary !== false
+    });
   };
 
   const handleStartCreate = () => {
@@ -221,7 +241,13 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
       image: '/images/kaichi-dham.jpg',
       description: '',
       badge: 'New Package',
-      status: 'active'
+      status: 'active',
+      itinerary: [
+        { day: 1, title: 'Departure & Arrival', desc: 'Comfortable departure in Deluxe AC vehicle, scenic highway travel, hotel check-in and evening local sightseeing.' },
+        { day: 2, title: 'Temple Darshan & Sightseeing', desc: 'Early morning holy darshan, aarti participation, local attractions and traditional meals.' },
+        { day: 3, title: 'Return Journey', desc: 'Breakfast, souvenir shopping and scenic return journey home.' }
+      ],
+      showItinerary: true
     });
   };
 
@@ -263,7 +289,9 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
         image: formData.image || '/images/chardham.jpg',
         description: formData.description || 'Custom crafted tour package.',
         badge: formData.badge || 'Featured',
-        status: formData.status || 'active'
+        status: formData.status || 'active',
+        itinerary: formData.itinerary || [],
+        showItinerary: formData.showItinerary !== false
       };
       updateCurrentList([newItem, ...currentList]);
       setIsCreatingNew(false);
@@ -836,6 +864,133 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
                       />
                     </div>
 
+                    {/* ✦ DETAILED ITINERARY BUILDER & HIDE/SHOW MANAGER ✦ */}
+                    <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-3">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-2.5">
+                        <div className="flex items-center gap-2">
+                          <Calendar className="w-4 h-4 text-amber-400" />
+                          <label className="text-sm font-bold text-white">
+                            Detailed Itinerary (दिन-वार कार्यक्रम)
+                          </label>
+                        </div>
+
+                        {/* Show / Hide Toggle in Form */}
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs text-slate-400">Display Itinerary:</span>
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setFormData((prev) => ({
+                                ...prev,
+                                showItinerary: prev.showItinerary === false ? true : false,
+                              }))
+                            }
+                            className={`px-3 py-1 rounded-md text-xs font-bold flex items-center gap-1.5 transition ${
+                              formData.showItinerary !== false
+                                ? 'bg-emerald-950 border border-emerald-700 text-emerald-300'
+                                : 'bg-red-950 border border-red-800 text-red-300'
+                            }`}
+                          >
+                            {formData.showItinerary !== false ? (
+                              <>
+                                <Eye className="w-3.5 h-3.5" />
+                                <span>SHOWING (दिख रहा है)</span>
+                              </>
+                            ) : (
+                              <>
+                                <EyeOff className="w-3.5 h-3.5" />
+                                <span>HIDDEN (छुपा हुआ है)</span>
+                              </>
+                            )}
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Day-by-Day List */}
+                      <div className="space-y-3">
+                        {Array.isArray(formData.itinerary) && formData.itinerary.length > 0 ? (
+                          formData.itinerary.map((dayItem, idx) => (
+                            <div
+                              key={idx}
+                              className="p-3 rounded-lg bg-slate-900 border border-slate-800 space-y-2 relative group"
+                            >
+                              <div className="flex items-center justify-between gap-2">
+                                <div className="flex items-center gap-2 flex-1">
+                                  <span className="px-2 py-0.5 rounded bg-amber-500/20 text-amber-400 font-bold text-xs shrink-0">
+                                    Day {dayItem.day || idx + 1}
+                                  </span>
+                                  <input
+                                    type="text"
+                                    value={dayItem.title || ''}
+                                    placeholder="Day Title (e.g. Departure & Holy Darshan)"
+                                    onChange={(e) => {
+                                      const updatedItin = [...(formData.itinerary || [])];
+                                      updatedItin[idx] = { ...updatedItin[idx], title: e.target.value };
+                                      setFormData({ ...formData, itinerary: updatedItin });
+                                    }}
+                                    className="w-full px-2.5 py-1 rounded bg-slate-950 border border-slate-700 text-white text-xs font-semibold focus:outline-none focus:border-amber-400"
+                                  />
+                                </div>
+                                <button
+                                  type="button"
+                                  title="Remove this day"
+                                  onClick={() => {
+                                    const updatedItin = (formData.itinerary || [])
+                                      .filter((_, i) => i !== idx)
+                                      .map((it, newIdx) => ({ ...it, day: newIdx + 1 }));
+                                    setFormData({ ...formData, itinerary: updatedItin });
+                                  }}
+                                  className="text-slate-500 hover:text-red-400 p-1 transition"
+                                >
+                                  <Trash2 className="w-3.5 h-3.5" />
+                                </button>
+                              </div>
+
+                              <textarea
+                                rows={2}
+                                value={dayItem.desc || ''}
+                                placeholder="Details of activities, sightseeing, aarti timing, stay..."
+                                onChange={(e) => {
+                                  const updatedItin = [...(formData.itinerary || [])];
+                                  updatedItin[idx] = { ...updatedItin[idx], desc: e.target.value };
+                                  setFormData({ ...formData, itinerary: updatedItin });
+                                }}
+                                className="w-full px-2.5 py-1.5 rounded bg-slate-950 border border-slate-700 text-slate-300 text-xs leading-relaxed focus:outline-none focus:border-amber-400"
+                              />
+                            </div>
+                          ))
+                        ) : (
+                          <div className="p-3 text-center text-xs text-slate-500 bg-slate-900/60 rounded-lg border border-dashed border-slate-800">
+                            No custom day itinerary added yet. Click "+ Add Day to Itinerary" below to specify Day 1, Day 2 schedule.
+                          </div>
+                        )}
+
+                        {/* Add Day Button */}
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const current = formData.itinerary || [];
+                            const nextDayNum = current.length + 1;
+                            setFormData({
+                              ...formData,
+                              itinerary: [
+                                ...current,
+                                {
+                                  day: nextDayNum,
+                                  title: `Day ${nextDayNum} Sightseeing & Travel`,
+                                  desc: 'Morning departure, darshan, breakfast and evening transfer.',
+                                },
+                              ],
+                            });
+                          }}
+                          className="w-full py-2 rounded-lg border border-dashed border-amber-500/40 hover:border-amber-400 text-amber-300 hover:text-amber-200 text-xs font-semibold flex items-center justify-center gap-1.5 bg-amber-950/10 hover:bg-amber-950/20 transition cursor-pointer"
+                        >
+                          <Plus className="w-3.5 h-3.5" />
+                          <span>+ Add Day to Itinerary (नया दिन जोड़ें)</span>
+                        </button>
+                      </div>
+                    </div>
+
                     <div className="flex items-center gap-3 pt-2">
                       <button
                         type="submit"
@@ -901,17 +1056,44 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
                                   LIVE
                                 </span>
                               )}
+                              {item.showItinerary === false && (
+                                <span className="px-2 py-0.5 rounded bg-orange-950 border border-orange-800 text-orange-400 text-[10px] font-bold">
+                                  ITIN HIDDEN
+                                </span>
+                              )}
                             </div>
                             <div className="text-xs text-slate-400 flex items-center gap-3 mt-1">
                               <span className="text-amber-400 font-bold">₹{item.price.toLocaleString('en-IN')}</span>
                               <span>• {item.duration}</span>
                               <span className="hidden sm:inline">• {item.destination}</span>
+                              <span className="text-slate-500">
+                                • {Array.isArray(item.itinerary) ? `${item.itinerary.length} Days Itin` : 'No Itin'}
+                              </span>
                             </div>
                           </div>
                         </div>
 
                         <div className="flex items-center gap-2 self-end sm:self-center">
-                          {/* Hide / Show Toggle */}
+                          {/* Quick Itinerary Hide / Show Toggle */}
+                          <button
+                            onClick={() => handleToggleItineraryHide(item.id)}
+                            title={
+                              item.showItinerary === false
+                                ? 'Itinerary is Hidden. Click to Show Detailed Itinerary'
+                                : 'Itinerary is Shown. Click to Hide Detailed Itinerary'
+                            }
+                            className={`px-2.5 py-1.5 rounded-lg border text-xs font-semibold flex items-center gap-1.5 transition ${
+                              item.showItinerary === false
+                                ? 'bg-orange-950/40 border-orange-700/50 text-orange-300 hover:bg-orange-900/60'
+                                : 'bg-slate-800 border-slate-700 text-slate-300 hover:text-white'
+                            }`}
+                          >
+                            <Calendar className="w-3.5 h-3.5 text-amber-400" />
+                            <span className="hidden md:inline">Itin:</span>
+                            <span>{item.showItinerary === false ? 'Show' : 'Hide'}</span>
+                          </button>
+
+                          {/* Hide / Show Entire Tour Toggle */}
                           <button
                             onClick={() => handleToggleHide(item.id)}
                             title={isHidden ? 'Click to Show on Website' : 'Click to Hide from Website'}

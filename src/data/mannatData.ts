@@ -28,6 +28,7 @@ export interface TourItem {
   galleryImages?: string[];
   videoUrl?: string; // YouTube or MP4 video link
   itinerary?: { day: number; title: string; desc: string }[];
+  showItinerary?: boolean; // Admin toggle to show/hide Detailed Itinerary
   status?: string;
   badge?: string;
   closingSoon?: boolean;
